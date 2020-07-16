@@ -19,14 +19,14 @@ cdk deploy -c env=dev --profile my-profile <br />
 cdk destroy -c env=dev --profile my-profile <br />
 
 ## Create Resources
-1 VPC
-1 Internet Gateway
-4 Route Table
-2 Private Subnets
-2 Public Subnets
-1 Security Group
-1 DB Instance
-1 DB Subnet Group
-1 Secret Manager
-1 DB Snapshot
+1 VPC <br />
+1 Internet Gateway <br />
+4 Route Table <br />
+2 Private Subnets <br />
+2 Public Subnets <br />
+1 Security Group <br />
+1 DB Instance <br />
+1 DB Subnet Group <br />
+1 Secret Manager <br />
+1 DB Snapshot <br />
 
