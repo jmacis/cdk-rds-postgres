@@ -10,3 +10,7 @@ cdk.out
 # Parcel build directories
 .cache
 .build
+
+**/.DS_Store
+
+cdk.context.json
