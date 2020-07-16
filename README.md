@@ -17,3 +17,16 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 cdk synth -c env=dev --profile my-profile <br />
 cdk deploy -c env=dev --profile my-profile <br />
 cdk destroy -c env=dev --profile my-profile <br />
+
+## Create Resources
+1 VPC
+1 Internet Gateway
+4 Route Table
+2 Private Subnets
+2 Public Subnets
+1 Security Group
+1 DB Instance
+1 DB Subnet Group
+1 Secret Manager
+1 DB Snapshot
+
