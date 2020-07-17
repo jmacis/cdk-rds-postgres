@@ -51,5 +51,20 @@ export class CdkRdsPostgresStack extends cdk.Stack {
 
     // create ingress rule port 5432
     db.connections.allowDefaultPortFromAnyIpv4();
+
+    //create rds db read replica
+    const replica = new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
+      instanceIdentifier: 'cdk-rds-postgres-read',
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+      sourceDatabaseInstance: db,
+      vpc: vpc,
+      vpcPlacement: { subnetType: ec2.SubnetType.PUBLIC },
+      deleteAutomatedBackups: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+      deletionProtection: false
+    });
+
+    // create ingress rule port 5432
+    replica.connections.allowDefaultPortFromAnyIpv4();
   }
 }

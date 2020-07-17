@@ -26,6 +26,7 @@ cdk destroy -c env=dev --profile my-profile <br />
 2 Public Subnets <br />
 1 Security Group <br />
 1 DB Instance <br />
+1 DB Read Replica <br />
 1 DB Subnet Group <br />
 1 Secret Manager <br />
 1 DB Snapshot <br />
