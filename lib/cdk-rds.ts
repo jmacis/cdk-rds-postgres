@@ -7,6 +7,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { RemovalPolicy } from '@aws-cdk/core';
 
 export interface RdsProps {
+    name: string,
     vpc: ec2.Vpc
 }
 

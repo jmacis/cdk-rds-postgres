@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as logs from '@aws-cdk/aws-logs';
 import { VpcStack } from './cdk-vpc';
 import { RdsStack } from './cdk-rds';
+import { SnsStack } from './cdk-sns';
 
 export class CdkRdsStack extends cdk.Stack {
 
@@ -17,9 +18,22 @@ export class CdkRdsStack extends cdk.Stack {
         };
 
         // create vpc resource
-        const vpc = new VpcStack(this, 'Vpc', vpcProps);
+        const vpcStackEntity = new VpcStack(this, 'Vpc', vpcProps);
+
+        const rdsProps = {
+            name: 'test',
+            vpc: vpcStackEntity.vpc
+        };
 
         // create rds resource
-        const rds = new RdsStack(this, 'Rds', vpc);
+        const rdsStackEntity = new RdsStack(this, 'Rds', rdsProps);
+
+        const snsProps = {
+            name: 'test',
+            db: rdsStackEntity.db
+        };
+
+        // create sns resource
+        const sns = new SnsStack(this, 'Sns', snsProps);
     }
 }
