@@ -104,7 +104,10 @@ import { RemovalPolicy } from '@aws-cdk/core';
     // create rds cloudwatch cpu metric
     const cpuMetric = db.metric('CPUUtilization');
 
-    // create cloudwatch alarm
+    // create rds cloudwatch iopsWrite metric
+    const ioMetric = db.metric('WriteIOPS');
+
+    // create cpu cloudwatch alarm
     const cpuAlarm = new cloudwatch.Alarm(this, 'CpuAlarm', {
       evaluationPeriods: 2,
       metric: cpuMetric,
@@ -114,6 +117,21 @@ import { RemovalPolicy } from '@aws-cdk/core';
 
     // add rds cpu alarm to sns topic
     cpuAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(topic));
+
+    // create rds cloudwatch iopsWrite metric
+    const iopsMetric = db.metric('WriteIOPS');
+
+    // create iops cloudwatch alarm
+    const iopsAlarm = new cloudwatch.Alarm(this, 'IopsAlarm', {
+      evaluationPeriods: 2,
+      metric: iopsMetric,
+      threshold: 7000,
+      statistic: 'max',
+      period: cdk.Duration.seconds(60)
+    });
+
+    // add rds iops alarm to sns topic
+    iopsAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(topic));
 
     // create ingress rule port 5432
     db.connections.allowDefaultPortFromAnyIpv4();

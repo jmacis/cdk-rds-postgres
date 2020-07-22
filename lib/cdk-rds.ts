@@ -15,14 +15,15 @@ export class RdsStack extends cdk.Construct {
     public readonly paramterGroup: rds.ParameterGroup;
     public readonly replica: rds.DatabaseInstanceReadReplica;
     public readonly masterUsername: string = 'dcpsadmin';
-    // public readonly database: DatabaseInstance;
 
     constructor(scope: cdk.Construct, id: string, props: RdsProps) {
         super(scope, id);
 
         // create rds paramter group
         this.paramterGroup = new rds.ParameterGroup(this, 'ParamterGroup', {
-            family: 'postgres11',
+            engine: rds.DatabaseInstanceEngine.postgres({
+                version: rds.PostgresEngineVersion.VER_11_6
+            }),
             description: 'CloudFormation AWS RDS PostgreSQL Database Parameter Group',
             parameters: {
                 shared_preload_libraries: 'auto_explain,pg_stat_statements,pg_hint_plan,pgaudit',
@@ -46,8 +47,9 @@ export class RdsStack extends cdk.Construct {
         // create rds resource
         this.db = new rds.DatabaseInstance(this, 'RdsInstance', {
             instanceIdentifier: 'cdk-rds-postgres',
-            engine: rds.DatabaseInstanceEngine.POSTGRES,
-            engineVersion: '11.6',
+            engine: rds.DatabaseInstanceEngine.postgres({
+                version: rds.PostgresEngineVersion.VER_11_6
+            }),
             masterUsername: this.masterUsername,
             databaseName: 'demo',
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
