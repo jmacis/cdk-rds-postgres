@@ -57,7 +57,7 @@ import { RemovalPolicy } from '@aws-cdk/core';
       }
     });
 
-    // create rds db instance
+    // create db instance
     const db = new rds.DatabaseInstance(this, 'RdsInstance', {
       instanceIdentifier: 'cdk-rds-postgres',
       engine: rds.DatabaseInstanceEngine.postgres({
@@ -78,23 +78,9 @@ import { RemovalPolicy } from '@aws-cdk/core';
       deletionProtection: false
     });
 
-    // const metric = new cloudwatch.Metric({
-    //   period: cdk.Duration.seconds(300),
-    //   statistic: 'Average',
-    //   metricName: 'CPUUtilization',
-    //   namespace: 'AWS/RDS'
-    // });
-
-    // const alarm = metric.createAlarm(this, 'RdsAlarm', {
-    //   evaluationPeriods: 1,
-    //   threshold: 1,
-    //   actionsEnabled: true,
-    //   statistic: 'average'
-    // });
-
     // create sns resource
     const topic = new sns.Topic(this, 'SnsTopic', {
-      // displayName: 'cdk-rds-postgres',
+      displayName: 'cdk-rds-postgres-sns',
       // topicName: 'cdk-rds-postgres'
     });
 
@@ -103,9 +89,6 @@ import { RemovalPolicy } from '@aws-cdk/core';
 
     // create rds cloudwatch cpu metric
     const cpuMetric = db.metric('CPUUtilization');
-
-    // create rds cloudwatch iopsWrite metric
-    const ioMetric = db.metric('WriteIOPS');
 
     // create cpu cloudwatch alarm
     const cpuAlarm = new cloudwatch.Alarm(this, 'CpuAlarm', {
