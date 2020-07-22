@@ -19,11 +19,6 @@ export class CdkRdsStack extends cdk.Stack {
         // create vpc resource
         const vpc = new VpcStack(this, 'Vpc', vpcProps);
 
-        // const rdsProps = {
-        //     vpc: vpc,
-        //     name: 'test'
-        // };
-
         // create rds resource
         const rds = new RdsStack(this, 'Rds', vpc);
     }
