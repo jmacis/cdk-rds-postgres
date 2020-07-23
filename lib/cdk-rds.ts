@@ -1,21 +1,25 @@
 import * as cdk from '@aws-cdk/core';
 import * as rds from '@aws-cdk/aws-rds';
 import * as logs from '@aws-cdk/aws-logs';
+import * as sns from '@aws-cdk/aws-sns';
+import * as subs from '@aws-cdk/aws-sns-subscriptions';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import cloudwatch_actions = require('@aws-cdk/aws-cloudwatch-actions')
 // import { Vpc, InstanceType, SecurityGroup, ISubnet } from "@aws-cdk/aws-ec2";
 // import { ParameterGroup, DatabaseInstance, DatabaseInstanceEngine, StorageType } from "@aws-cdk/aws-rds";
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { RemovalPolicy } from '@aws-cdk/core';
 
 export interface RdsProps {
-    name: string,
-    vpc: ec2.Vpc
+    vpc: ec2.Vpc,
+    masterUsername: string,
+    databaseName: string
 }
 
 export class RdsStack extends cdk.Construct {
     public readonly db: rds.DatabaseInstance;
     public readonly paramterGroup: rds.ParameterGroup;
     public readonly replica: rds.DatabaseInstanceReadReplica;
-    public readonly masterUsername: string = 'dcpsadmin';
 
     constructor(scope: cdk.Construct, id: string, props: RdsProps) {
         super(scope, id);
@@ -51,8 +55,8 @@ export class RdsStack extends cdk.Construct {
             engine: rds.DatabaseInstanceEngine.postgres({
                 version: rds.PostgresEngineVersion.VER_11_6
             }),
-            masterUsername: this.masterUsername,
-            databaseName: 'demo',
+            masterUsername: props.masterUsername,
+            databaseName: props.databaseName,
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
             vpc: props.vpc,
             parameterGroup: this.paramterGroup,
@@ -66,6 +70,44 @@ export class RdsStack extends cdk.Construct {
             removalPolicy: RemovalPolicy.DESTROY,
             deletionProtection: false
         });
+
+        // // create sns resource
+        // const topic = new sns.Topic(this, 'SnsTopic', {
+        //     displayName: 'cdk-rds-postgres-sns',
+        //     // topicName: 'cdk-rds-postgres'
+        // });
+
+        // // subscribe to sns topic
+        // topic.addSubscription(new subs.EmailSubscription('johnmacis@gmail.com'));
+
+        // // create rds cloudwatch cpu metric
+        // const cpuMetric = this.db.metric('CPUUtilization');
+
+        // // create cpu cloudwatch alarm
+        // const cpuAlarm = new cloudwatch.Alarm(this, 'CpuAlarm', {
+        //     evaluationPeriods: 2,
+        //     metric: cpuMetric,
+        //     threshold: 75,
+        //     period: cdk.Duration.seconds(300)
+        // });
+
+        // // add rds cpu alarm to sns topic
+        // cpuAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(topic));
+
+        // // create rds cloudwatch iopsWrite metric
+        // const iopsMetric = this.db.metric('WriteIOPS');
+
+        // // create iops cloudwatch alarm
+        // const iopsAlarm = new cloudwatch.Alarm(this, 'IopsAlarm', {
+        //     evaluationPeriods: 2,
+        //     metric: iopsMetric,
+        //     threshold: 7000,
+        //     statistic: 'max',
+        //     period: cdk.Duration.seconds(60)
+        // });
+
+        // // add rds iops alarm to sns topic
+        // iopsAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(topic));
 
         // create ingress rule port 5432
         this.db.connections.allowDefaultPortFromAnyIpv4();

@@ -1,18 +1,18 @@
 import * as cdk from '@aws-cdk/core';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as logs from '@aws-cdk/aws-logs';
 import { VpcStack } from './cdk-vpc';
 import { RdsStack } from './cdk-rds';
-import { SnsStack } from './cdk-sns';
+import { CloudWatchStack } from './cdk-sns-cloudwatch';
 
 export class CdkRdsStack extends cdk.Stack {
 
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
+        // cmd line arg env
         const env = scope.node.tryGetContext('env');
+
         const vpcProps = {
-            name: `VPC-${env}`,
+            name: `Vpc-${env}`,
             cidr: '10.1.0.0/16',
             maxAzs: 2
         };
@@ -21,19 +21,24 @@ export class CdkRdsStack extends cdk.Stack {
         const vpcStackEntity = new VpcStack(this, 'Vpc', vpcProps);
 
         const rdsProps = {
-            name: 'test',
-            vpc: vpcStackEntity.vpc
+            vpc: vpcStackEntity.vpc,
+            masterUsername: 'dcpsadmin',
+            databaseName: 'demo'
         };
 
         // create rds resource
         const rdsStackEntity = new RdsStack(this, 'Rds', rdsProps);
 
-        const snsProps = {
-            name: 'test',
+        const snsCloudWatchProps = {
+            email: 'johnmacis@gmail.com',
             db: rdsStackEntity.db
         };
 
-        // create sns resource
-        const sns = new SnsStack(this, 'Sns', snsProps);
+        // create sns cloudwatch resource
+        const snsStackEntity = new CloudWatchStack(this, 'SnsCloudWatch', snsCloudWatchProps);
+
+        // debug
+        // console.log("CPU_METRIC:", snsStackEntity.topic.metric(snsStackEntity.cpuMetric.metricName));
+        // console.log("IOPS_METRIC:", snsStackEntity.topic.metric(snsStackEntity.iopsMetric.metricName));
     }
 }
