@@ -6,8 +6,8 @@ import cloudwatch_actions = require('@aws-cdk/aws-cloudwatch-actions')
 import * as rds from '@aws-cdk/aws-rds';
 
 export interface SnsCloudWatchProps {
-    email: string;
     db: rds.DatabaseInstance;
+    email: string;
 }
 
 export class CloudWatchStack extends cdk.Construct {

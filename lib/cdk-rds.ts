@@ -11,9 +11,9 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { RemovalPolicy } from '@aws-cdk/core';
 
 export interface RdsProps {
-    vpc: ec2.Vpc,
-    masterUsername: string,
-    databaseName: string
+    vpc: ec2.Vpc;
+    masterUsername: string;
+    databaseName: string;
 }
 
 export class RdsStack extends cdk.Construct {
@@ -70,44 +70,6 @@ export class RdsStack extends cdk.Construct {
             removalPolicy: RemovalPolicy.DESTROY,
             deletionProtection: false
         });
-
-        // // create sns resource
-        // const topic = new sns.Topic(this, 'SnsTopic', {
-        //     displayName: 'cdk-rds-postgres-sns',
-        //     // topicName: 'cdk-rds-postgres'
-        // });
-
-        // // subscribe to sns topic
-        // topic.addSubscription(new subs.EmailSubscription('johnmacis@gmail.com'));
-
-        // // create rds cloudwatch cpu metric
-        // const cpuMetric = this.db.metric('CPUUtilization');
-
-        // // create cpu cloudwatch alarm
-        // const cpuAlarm = new cloudwatch.Alarm(this, 'CpuAlarm', {
-        //     evaluationPeriods: 2,
-        //     metric: cpuMetric,
-        //     threshold: 75,
-        //     period: cdk.Duration.seconds(300)
-        // });
-
-        // // add rds cpu alarm to sns topic
-        // cpuAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(topic));
-
-        // // create rds cloudwatch iopsWrite metric
-        // const iopsMetric = this.db.metric('WriteIOPS');
-
-        // // create iops cloudwatch alarm
-        // const iopsAlarm = new cloudwatch.Alarm(this, 'IopsAlarm', {
-        //     evaluationPeriods: 2,
-        //     metric: iopsMetric,
-        //     threshold: 7000,
-        //     statistic: 'max',
-        //     period: cdk.Duration.seconds(60)
-        // });
-
-        // // add rds iops alarm to sns topic
-        // iopsAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(topic));
 
         // create ingress rule port 5432
         this.db.connections.allowDefaultPortFromAnyIpv4();

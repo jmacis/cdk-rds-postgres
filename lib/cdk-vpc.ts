@@ -3,9 +3,9 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 // import { Vpc, InstanceType, SecurityGroup, ISubnet } from "@aws-cdk/aws-ec2";
 
 export interface VpcProps {
-    name: string,
-    cidr: string,
-    maxAzs: number
+    name: string;
+    cidr: string;
+    maxAzs: number;
 }
 
 export class VpcStack extends cdk.Construct {

@@ -30,15 +30,15 @@ export class CdkRdsStack extends cdk.Stack {
         const rdsStackEntity = new RdsStack(this, 'Rds', rdsProps);
 
         const snsCloudWatchProps = {
-            email: 'johnmacis@gmail.com',
-            db: rdsStackEntity.db
+            db: rdsStackEntity.db,
+            email: 'johnmacis@gmail.com'
         };
 
         // create sns cloudwatch resource
         const snsStackEntity = new CloudWatchStack(this, 'SnsCloudWatch', snsCloudWatchProps);
 
         // debug
-        // console.log("CPU_METRIC:", snsStackEntity.topic.metric(snsStackEntity.cpuMetric.metricName));
-        // console.log("IOPS_METRIC:", snsStackEntity.topic.metric(snsStackEntity.iopsMetric.metricName));
+        console.log("CPU_METRIC:", snsStackEntity.topic.metric(snsStackEntity.cpuMetric.metricName));
+        console.log("IOPS_METRIC:", snsStackEntity.topic.metric(snsStackEntity.iopsMetric.metricName));
     }
 }
