@@ -4,9 +4,6 @@ import * as cdk from '@aws-cdk/core';
 // import { CdkRdsPostgresStack } from '../lib/cdk-rds-postgres-stack';
 import { CdkRdsStack } from '../lib/cdk-rds-stack';
 import { Tag } from '@aws-cdk/core';
-// import { stackTags as stackTagsDev } from './cdk-config-dev';
-// import { stackTags as stackTagsStag } from './cdk-config-stag';
-// import { stackTags as stackTagsProd } from './cdk-config-prod';
 import { stackTagsDev, stackTagsStag, stackTagsProd } from './cdk-tag-config';
 import { getConfig } from './config';
 
