@@ -5,14 +5,18 @@ import * as cdk from '@aws-cdk/core';
 import { CdkRdsStack } from '../lib/cdk-rds-stack';
 import { Tag } from '@aws-cdk/core';
 import { stackTags as stackTagsDev } from './cdk-config-dev';
+import { stackTags as stackTagsStag } from './cdk-config-stag';
 import { stackTags as stackTagsProd } from './cdk-config-prod';
+import { getConfig } from './config';
 
 const app = new cdk.App();
 
-const env = app.node.tryGetContext('env');
+const env = app.node.tryGetContext('env') || process.env.NODE_ENV || 'development';
 if (env === undefined) {
     throw new Error('env must be passed in command argument');
 }
+
+const config = getConfig();
 
 const stack = new CdkRdsStack(app, 'CdkRdsPostgresStack', {
     env: {
@@ -20,7 +24,7 @@ const stack = new CdkRdsStack(app, 'CdkRdsPostgresStack', {
         region: process.env.CDK_DEPLOY_REGION || process.env.CDK_DEFAULT_REGION
     },
     description: "CDK RDS Postgres Stack"
-});
+}, config);
 
 // const stack = new CdkRdsPostgresStack(app, 'CdkRdsPostgresStack', {
 //     env: {
@@ -31,5 +35,6 @@ const stack = new CdkRdsStack(app, 'CdkRdsPostgresStack', {
 // });
 
 // apply tags to stack
-const stackTags = env === 'dev' ? stackTagsDev : stackTagsProd;
+const stackTags = env === 'development' ? stackTagsDev : (env === 'staging' ? stackTagsStag : stackTagsProd);
+// const stackTags = env === 'development' ? stackTagsDev : stackTagsProd;
 stackTags.forEach(tag => Tag.add(stack, tag.name, tag.value));

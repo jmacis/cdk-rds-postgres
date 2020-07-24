@@ -1,6 +1,7 @@
 {
   "name": "cdk-rds-postgres",
   "version": "0.1.0",
+  "license": "UNLICENSED",
   "bin": {
     "cdk-rds-postgres": "bin/cdk-rds-postgres.js"
   },
@@ -8,7 +9,23 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "deploy": "cdk deploy -c env=$NODE_ENV --profile ext-jmacis",
+    "deploy:development": "NODE_ENV=development dotenv -e .env.development yarn run deploy",
+    "deploy:staging": "NODE_ENV=staging dotenv -e .env.staging yarn run deploy",
+    "deploy:production": "NODE_ENV=production dotenv -e .env.production yarn run deploy",
+    "synth": "cdk synth -c env=$NODE_ENV --profile ext-jmacis",
+    "synth:development": "NODE_ENV=development dotenv -e .env.development yarn run synth",
+    "synth:staging": "NODE_ENV=staging dotenv -e .env.staging yarn run synth",
+    "synth:production": "NODE_ENV=production dotenv -e .env.production yarn run synth",
+    "destroy": "cdk destroy -c env=$NODE_ENV --profile ext-jmacis",
+    "destroy:development": "NODE_ENV=development dotenv -e .env.development npm run destroy",
+    "destroy:staging": "NODE_ENV=staging dotenv -e .env.staging yarn run destroy",
+    "destroy:production": "NODE_ENV=production dotenv -e .env.production yarn run destroy",
+    "diff": "cdk diff -c env=$NODE_ENV --profile ext-jmacis",
+    "diff:development": "NODE_ENV=development dotenv -e .env.development yarn run diff",
+    "diff:staging": "NODE_ENV=staging dotenv -e .env.staging yarn run diff",
+    "diff:production": "NODE_ENV=production dotenv -e .env.production yarn run diff"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.54.0",
@@ -29,6 +46,7 @@
     "@aws-cdk/aws-sns": "^1.54.0",
     "@aws-cdk/aws-sns-subscriptions": "^1.54.0",
     "@aws-cdk/core": "1.54.0",
+    "dotenv-cli": "^3.2.0",
     "source-map-support": "^0.5.16"
   }
 }

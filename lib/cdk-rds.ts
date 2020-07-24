@@ -1,18 +1,15 @@
 import * as cdk from '@aws-cdk/core';
+import { Config } from '../bin/config';
 import * as rds from '@aws-cdk/aws-rds';
 import * as logs from '@aws-cdk/aws-logs';
-import * as sns from '@aws-cdk/aws-sns';
-import * as subs from '@aws-cdk/aws-sns-subscriptions';
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import cloudwatch_actions = require('@aws-cdk/aws-cloudwatch-actions')
 // import { Vpc, InstanceType, SecurityGroup, ISubnet } from "@aws-cdk/aws-ec2";
 // import { ParameterGroup, DatabaseInstance, DatabaseInstanceEngine, StorageType } from "@aws-cdk/aws-rds";
-import * as ec2 from '@aws-cdk/aws-ec2';
+// import * as ec2 from '@aws-cdk/aws-ec2';
+import { Vpc, InstanceType, SubnetType } from '@aws-cdk/aws-ec2'
 import { RemovalPolicy } from '@aws-cdk/core';
 
 export interface RdsProps {
-    vpc: ec2.Vpc;
-    masterUsername: string;
+    vpc: Vpc;
     databaseName: string;
 }
 
@@ -21,7 +18,7 @@ export class RdsStack extends cdk.Construct {
     public readonly paramterGroup: rds.ParameterGroup;
     public readonly replica: rds.DatabaseInstanceReadReplica;
 
-    constructor(scope: cdk.Construct, id: string, props: RdsProps) {
+    constructor(scope: cdk.Construct, id: string, props: RdsProps, config: Config) {
         super(scope, id);
 
         // create rds paramter group
@@ -55,17 +52,19 @@ export class RdsStack extends cdk.Construct {
             engine: rds.DatabaseInstanceEngine.postgres({
                 version: rds.PostgresEngineVersion.VER_11_6
             }),
-            masterUsername: props.masterUsername,
+            masterUsername: config.database.masterUsername,
             databaseName: props.databaseName,
-            instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+            instanceType: new InstanceType(config.database.instanceType),
+            // instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
             vpc: props.vpc,
+            multiAz: config.database.multiAz,
             parameterGroup: this.paramterGroup,
-            vpcPlacement: { subnetType: ec2.SubnetType.PUBLIC },
-            backupRetention: cdk.Duration.days(7),
+            vpcPlacement: { subnetType: SubnetType.PUBLIC },
+            backupRetention: cdk.Duration.days(config.database.backupRetention),
             cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
             autoMinorVersionUpgrade: false,
-            allocatedStorage: 20,
-            maxAllocatedStorage: 30,
+            allocatedStorage: config.database.allocatedStorage,
+            maxAllocatedStorage: config.database.maxAllocatedStorage,
             deleteAutomatedBackups: true,
             removalPolicy: RemovalPolicy.DESTROY,
             deletionProtection: false
@@ -77,10 +76,11 @@ export class RdsStack extends cdk.Construct {
         //create rds db read replica
         this.replica = new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
             instanceIdentifier: 'cdk-rds-postgres-read',
-            instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+            instanceType: new InstanceType(config.database.instanceType),
+            // instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
             sourceDatabaseInstance: this.db,
             vpc: props.vpc,
-            vpcPlacement: { subnetType: ec2.SubnetType.PUBLIC },
+            vpcPlacement: { subnetType: SubnetType.PUBLIC },
             deleteAutomatedBackups: true,
             removalPolicy: RemovalPolicy.DESTROY,
             deletionProtection: false

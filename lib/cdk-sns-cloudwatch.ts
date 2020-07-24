@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Config } from '../bin/config';
 import * as sns from '@aws-cdk/aws-sns';
 import * as subs from '@aws-cdk/aws-sns-subscriptions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
@@ -16,7 +17,7 @@ export class CloudWatchStack extends cdk.Construct {
     public readonly cpuMetric: cloudwatch.Metric;
     public readonly iopsMetric: cloudwatch.Metric;
 
-    constructor(scope: cdk.Construct, id: string, props: SnsCloudWatchProps) {
+    constructor(scope: cdk.Construct, id: string, props: SnsCloudWatchProps, config: Config) {
         super(scope, id);
 
         // create sns resource
@@ -35,8 +36,8 @@ export class CloudWatchStack extends cdk.Construct {
         const cpuAlarm = new cloudwatch.Alarm(this, 'CpuAlarm', {
             evaluationPeriods: 2,
             metric: this.cpuMetric,
-            threshold: 75,
-            period: cdk.Duration.seconds(300)
+            threshold: config.cloudwatchAlarms.cpuUtilzThreshold,
+            period: cdk.Duration.seconds(config.cloudwatchAlarms.cpuUtilzPeriod)
         });
 
         // add rds cpu alarm to sns topic
@@ -49,9 +50,9 @@ export class CloudWatchStack extends cdk.Construct {
         const iopsAlarm = new cloudwatch.Alarm(this, 'IopsAlarm', {
             evaluationPeriods: 2,
             metric: this.iopsMetric,
-            threshold: 7000,
+            threshold: config.cloudwatchAlarms.wrteIopsThreshold,
             statistic: 'max',
-            period: cdk.Duration.seconds(60)
+            period: cdk.Duration.seconds(config.cloudwatchAlarms.wrteIopsPeriod)
         });
 
         // add rds iops alarm to sns topic

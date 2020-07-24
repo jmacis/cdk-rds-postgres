@@ -14,3 +14,5 @@ cdk.out
 **/.DS_Store
 
 cdk.context.json
+
+yarn-error.log

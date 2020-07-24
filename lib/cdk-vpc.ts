@@ -1,10 +1,10 @@
 import * as cdk from '@aws-cdk/core';
+import { Config } from '../bin/config';
 import * as ec2 from '@aws-cdk/aws-ec2';
 // import { Vpc, InstanceType, SecurityGroup, ISubnet } from "@aws-cdk/aws-ec2";
 
 export interface VpcProps {
     name: string;
-    cidr: string;
     maxAzs: number;
 }
 
@@ -13,7 +13,7 @@ export class VpcStack extends cdk.Construct {
     public readonly privateSubnetConfiguration: ec2.SubnetConfiguration;
     public readonly publicSubnetConfiguration: ec2.SubnetConfiguration;
 
-    constructor(scope: cdk.Construct, id: string, props: VpcProps) {
+    constructor(scope: cdk.Construct, id: string, props: VpcProps, config: Config) {
         super(scope, id);
 
         // create vpc resource
@@ -30,7 +30,7 @@ export class VpcStack extends cdk.Construct {
         };
 
         this.vpc = new ec2.Vpc(this, props.name, {
-            cidr: props.cidr,
+            cidr: config.vpc.cidr,
             maxAzs: props.maxAzs,
             subnetConfiguration: [
                 this.privateSubnetConfiguration,
