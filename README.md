@@ -18,6 +18,10 @@ cdk synth -c env=dev --profile my-profile <br />
 cdk deploy -c env=dev --profile my-profile <br />
 cdk destroy -c env=dev --profile my-profile <br />
 
+npm run synth:development <br />
+npm run synth:staging <br />
+npm run synth:production <br />
+
 ## Create Resources
 1 VPC <br />
 1 Internet Gateway <br />
