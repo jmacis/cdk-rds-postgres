@@ -22,18 +22,19 @@ export class CdkRdsStack extends cdk.Stack {
 
         const rdsProps = {
             vpc: vpcStackEntity.vpc,
-            databaseName: 'demo'
+            databaseName: 'demo',
+            secretName: `db/${env}/password`
         };
 
         // create rds resource
         const rdsStackEntity = new RdsStack(this, 'Rds', rdsProps, config);
 
-        const snsCloudWatchProps = {
-            db: rdsStackEntity.db,
-            email: 'johnmacis@gmail.com'
-        };
+        // const snsCloudWatchProps = {
+        //     db: rdsStackEntity.db,
+        //     email: 'johnmacis@gmail.com'
+        // };
 
-        // create sns cloudwatch resource
-        const snsStackEntity = new CloudWatchStack(this, 'SnsCloudWatch', snsCloudWatchProps, config);
+        // // create sns cloudwatch resource
+        // const snsStackEntity = new CloudWatchStack(this, 'SnsCloudWatch', snsCloudWatchProps, config);
     }
 }

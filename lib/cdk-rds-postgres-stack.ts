@@ -12,7 +12,7 @@ import { RemovalPolicy, CfnMapping } from '@aws-cdk/core';
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // create paramters resource
+    // create parameters resource
     const project = new cdk.CfnParameter(this, 'Project', {
       type: 'String',
       default: 'dcps',
@@ -112,106 +112,106 @@ import { RemovalPolicy, CfnMapping } from '@aws-cdk/core';
       natGateways: 0
     });
 
-    // // create rds paramter group
-    // const paramterGroup = new rds.ParameterGroup(this, 'ParamterGroup', {
-    //   engine: rds.DatabaseInstanceEngine.postgres({
-    //     version: rds.PostgresEngineVersion.VER_11_6
-    //   }),
-    //   description: 'CloudFormation AWS RDS PostgreSQL Database Parameter Group',
-    //   parameters: {
-    //     shared_preload_libraries: 'auto_explain,pg_stat_statements,pg_hint_plan,pgaudit',
-    //     log_statement: 'ddl',
-    //     log_connections: '1',
-    //     log_disconnections: '1',
-    //     log_lock_waits: '1',
-    //     log_min_duration_statement: '5000',
-    //     'auto_explain.log_min_duration': '5000',
-    //     'auto_explain.log_verbose': '1',
-    //     log_rotation_age: '1440',
-    //     log_rotation_size: '102400',
-    //     'rds.log_retention_period': '10080',
-    //     random_page_cost: '1',
-    //     track_activity_query_size: '16384',
-    //     idle_in_transaction_session_timeout: '7200000',
-    //     statement_timeout: '7200000'
-    //   }
-    // });
+    // create rds parameter group
+    const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
+      engine: rds.DatabaseInstanceEngine.postgres({
+        version: rds.PostgresEngineVersion.VER_11_6
+      }),
+      description: 'CloudFormation AWS RDS PostgreSQL Database Parameter Group',
+      parameters: {
+        shared_preload_libraries: 'auto_explain,pg_stat_statements,pg_hint_plan,pgaudit',
+        log_statement: 'ddl',
+        log_connections: '1',
+        log_disconnections: '1',
+        log_lock_waits: '1',
+        log_min_duration_statement: '5000',
+        'auto_explain.log_min_duration': '5000',
+        'auto_explain.log_verbose': '1',
+        log_rotation_age: '1440',
+        log_rotation_size: '102400',
+        'rds.log_retention_period': '10080',
+        random_page_cost: '1',
+        track_activity_query_size: '16384',
+        idle_in_transaction_session_timeout: '7200000',
+        statement_timeout: '7200000'
+      }
+    });
 
-    // // create db instance
-    // const db = new rds.DatabaseInstance(this, 'RdsInstance', {
-    //   instanceIdentifier: 'cdk-rds-postgres',
-    //   engine: rds.DatabaseInstanceEngine.postgres({
-    //     version: rds.PostgresEngineVersion.VER_11_6
-    //   }),
-    //   masterUsername: 'dcpsadmin',
-    //   databaseName: 'demo',
-    //   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
-    //   vpc: vpc,
-    //   vpcPlacement: { subnetType: ec2.SubnetType.PUBLIC },
-    //   backupRetention: cdk.Duration.days(7),
-    //   cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
-    //   autoMinorVersionUpgrade: false,
-    //   allocatedStorage: 20,
-    //   maxAllocatedStorage: 30,
-    //   deleteAutomatedBackups: true,
-    //   removalPolicy: RemovalPolicy.DESTROY,
-    //   deletionProtection: false
-    // });
+    // create db instance
+    const db = new rds.DatabaseInstance(this, 'RdsInstance', {
+      instanceIdentifier: 'cdk-rds-postgres',
+      engine: rds.DatabaseInstanceEngine.postgres({
+        version: rds.PostgresEngineVersion.VER_11_6
+      }),
+      masterUsername: 'dcpsadmin',
+      databaseName: 'demo',
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+      vpc: vpc,
+      vpcPlacement: { subnetType: ec2.SubnetType.PUBLIC },
+      backupRetention: cdk.Duration.days(7),
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+      autoMinorVersionUpgrade: false,
+      allocatedStorage: 20,
+      maxAllocatedStorage: 30,
+      deleteAutomatedBackups: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+      deletionProtection: false
+    });
 
-    // // create sns resource
-    // const topic = new sns.Topic(this, 'SnsTopic', {
-    //   displayName: 'cdk-rds-postgres-sns',
-    //   // topicName: 'cdk-rds-postgres'
-    // });
+    // create sns resource
+    const topic = new sns.Topic(this, 'SnsTopic', {
+      displayName: 'cdk-rds-postgres-sns',
+      // topicName: 'cdk-rds-postgres'
+    });
 
-    // // subscribe to sns topic
-    // topic.addSubscription(new subs.EmailSubscription('johnmacis@gmail.com'));
+    // subscribe to sns topic
+    topic.addSubscription(new subs.EmailSubscription('johnmacis@gmail.com'));
 
-    // // create rds cloudwatch cpu metric
-    // const cpuMetric = db.metric('CPUUtilization');
+    // create rds cloudwatch cpu metric
+    const cpuMetric = db.metric('CPUUtilization');
 
-    // // create cpu cloudwatch alarm
-    // const cpuAlarm = new cloudwatch.Alarm(this, 'CpuAlarm', {
-    //   evaluationPeriods: 2,
-    //   metric: cpuMetric,
-    //   threshold: 75,
-    //   period: cdk.Duration.seconds(300)
-    // });
+    // create cpu cloudwatch alarm
+    const cpuAlarm = new cloudwatch.Alarm(this, 'CpuAlarm', {
+      evaluationPeriods: 2,
+      metric: cpuMetric,
+      threshold: 75,
+      period: cdk.Duration.seconds(300)
+    });
 
-    // // add rds cpu alarm to sns topic
-    // cpuAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(topic));
+    // add rds cpu alarm to sns topic
+    cpuAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(topic));
 
-    // // create rds cloudwatch iopsWrite metric
-    // const iopsMetric = db.metric('WriteIOPS');
+    // create rds cloudwatch iopsWrite metric
+    const iopsMetric = db.metric('WriteIOPS');
 
-    // // create iops cloudwatch alarm
-    // const iopsAlarm = new cloudwatch.Alarm(this, 'IopsAlarm', {
-    //   evaluationPeriods: 2,
-    //   metric: iopsMetric,
-    //   threshold: 7000,
-    //   statistic: 'max',
-    //   period: cdk.Duration.seconds(60)
-    // });
+    // create iops cloudwatch alarm
+    const iopsAlarm = new cloudwatch.Alarm(this, 'IopsAlarm', {
+      evaluationPeriods: 2,
+      metric: iopsMetric,
+      threshold: 7000,
+      statistic: 'max',
+      period: cdk.Duration.seconds(60)
+    });
 
-    // // add rds iops alarm to sns topic
-    // iopsAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(topic));
+    // add rds iops alarm to sns topic
+    iopsAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(topic));
 
-    // // create ingress rule port 5432
-    // db.connections.allowDefaultPortFromAnyIpv4();
+    // create ingress rule port 5432
+    db.connections.allowDefaultPortFromAnyIpv4();
 
-    // //create rds db read replica
-    // const replica = new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
-    //   instanceIdentifier: 'cdk-rds-postgres-read',
-    //   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
-    //   sourceDatabaseInstance: db,
-    //   vpc: vpc,
-    //   vpcPlacement: { subnetType: ec2.SubnetType.PUBLIC },
-    //   deleteAutomatedBackups: true,
-    //   removalPolicy: RemovalPolicy.DESTROY,
-    //   deletionProtection: false
-    // });
+    //create rds db read replica
+    const replica = new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
+      instanceIdentifier: 'cdk-rds-postgres-read',
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+      sourceDatabaseInstance: db,
+      vpc: vpc,
+      vpcPlacement: { subnetType: ec2.SubnetType.PUBLIC },
+      deleteAutomatedBackups: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+      deletionProtection: false
+    });
 
-    // // create ingress rule port 5432
-    // replica.connections.allowDefaultPortFromAnyIpv4();
+    // create ingress rule port 5432
+    replica.connections.allowDefaultPortFromAnyIpv4();
   }
 }

@@ -31,6 +31,12 @@ export interface CloudwatchConfig {
     wrteIopsPeriod: number;
 }
 
+export interface SecretsManagerConfig {
+    passwordLength: number;
+    excludePunctuation: boolean;
+    generateStringKey: string;
+}
+
 export interface Config {
     host: string;
     vpc: VpcConfig;
@@ -39,7 +45,8 @@ export interface Config {
     batchInstance: InstanceConfig;
     database: DatabaseConfig;
     certificate: CertificateConfig;
-    cloudwatchAlarms: CloudwatchConfig
+    cloudwatchAlarms: CloudwatchConfig;
+    secretsManager: SecretsManagerConfig;
 }
 
 function assert(value: any): string {
@@ -89,6 +96,11 @@ export function getConfig(): Config {
             wrteIopsThreshold: Number(assert(process.env.CLOUDWATCH_ALARM_WRTE_IOPS_THRESHOLD)),
             cpuUtilzPeriod: Number(assert(process.env.CLOUDWATCH_ALARM_CPU_UTILZ_PERIOD)),
             wrteIopsPeriod: Number(assert(process.env.CLOUDWATCH_ALARM_WRTE_IOPS_PERIOD)),
+        },
+        secretsManager: {
+            passwordLength: Number(assert(process.env.SECRETMANAGER_PASSWORD_LENGTH)),
+            excludePunctuation: assert(process.env.SECRETMANAGER_EXCLUDE_PUNCTUATION) === "true",
+            generateStringKey: assert(process.env.SECRETMANAGER_GENERATE_STRING_KEY),
         }
     };
 }
