@@ -61,8 +61,8 @@ export const parameterGroupStag: { key: string, value: string }[] = [
     { key: 'rds.log_retention_period', value: '10080' },
     { key: 'random_page_cost', value: '1' },
     { key: 'track_activity_query_size', value: '16384' },
-    { key: 'idle_in_transaction_session_timeout', value: '7200000' },
-    { key: 'statement_timeout', value: '7200000' }
+    { key: 'idle_in_transaction_session_timeout', value: '60000' },
+    { key: 'statement_timeout', value: '60000' }
 ];
 
 export const parameterGroupProd: { key: string, value: string }[] = [
@@ -79,8 +79,8 @@ export const parameterGroupProd: { key: string, value: string }[] = [
     { key: 'rds.log_retention_period', value: '10080' },
     { key: 'random_page_cost', value: '1' },
     { key: 'track_activity_query_size', value: '16384' },
-    { key: 'idle_in_transaction_session_timeout', value: '7200000' },
-    { key: 'statement_timeout', value: '7200000' }
+    { key: 'idle_in_transaction_session_timeout', value: '60000' },
+    { key: 'statement_timeout', value: '60000' }
 ];
 
 // export const parameterGroupDev: { [key: string]: string } = {

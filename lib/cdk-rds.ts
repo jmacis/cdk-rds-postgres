@@ -5,6 +5,7 @@ import * as logs from '@aws-cdk/aws-logs';
 // import { Vpc, InstanceType, SecurityGroup, ISubnet } from "@aws-cdk/aws-ec2";
 // import { ParameterGroup, DatabaseInstance, DatabaseInstanceEngine, StorageType } from "@aws-cdk/aws-rds";
 // import * as ec2 from '@aws-cdk/aws-ec2';
+import { Tag } from '@aws-cdk/core';
 import { Vpc, InstanceType, SubnetType } from '@aws-cdk/aws-ec2'
 import { RemovalPolicy } from '@aws-cdk/core';
 import { SecretsStack } from './cdk-secrets';
@@ -85,23 +86,29 @@ export class RdsStack extends cdk.Construct {
             deletionProtection: false
         });
 
+        // add tags to db master
+        Tag.add(this.db, 'Name', 'Master Database');
+
         // create ingress rule port 5432
         this.db.connections.allowDefaultPortFromAnyIpv4();
 
-        // //create rds db read replica
-        // this.replica = new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
-        //     instanceIdentifier: 'cdk-rds-postgres-read',
-        //     instanceType: new InstanceType(config.database.instanceType),
-        //     // instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
-        //     sourceDatabaseInstance: this.db,
-        //     vpc: props.vpc,
-        //     vpcPlacement: { subnetType: SubnetType.PUBLIC },
-        //     deleteAutomatedBackups: true,
-        //     removalPolicy: RemovalPolicy.DESTROY,
-        //     deletionProtection: false
-        // });
+        //create rds db read replica
+        this.replica = new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
+            instanceIdentifier: 'cdk-rds-postgres-read',
+            instanceType: new InstanceType(config.database.instanceType),
+            // instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
+            sourceDatabaseInstance: this.db,
+            vpc: props.vpc,
+            vpcPlacement: { subnetType: SubnetType.PUBLIC },
+            deleteAutomatedBackups: true,
+            removalPolicy: RemovalPolicy.DESTROY,
+            deletionProtection: false
+        });
 
-        // // create ingress rule port 5432
-        // this.replica.connections.allowDefaultPortFromAnyIpv4();
+        // add tags to db replica
+        Tag.add(this.replica, 'Name', 'Read Replica Database');
+
+        // create ingress rule port 5432
+        this.replica.connections.allowDefaultPortFromAnyIpv4();
     }
 }

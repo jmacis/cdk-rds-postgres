@@ -22,7 +22,7 @@ export class ParameterGroupStack extends cdk.Construct {
             description: 'CloudFormation AWS RDS PostgreSQL Database Parameter Group',
         });
 
-        // cmd line arg env
+        // cmdline arg env
         const env = scope.node.tryGetContext('env');
         const dbParameterGroup = env === 'development' ? parameterGroupDev : (env === 'staging' ? parameterGroupStag : parameterGroupProd);
         dbParameterGroup.forEach(pg => this.parameterGroup.addParameter(pg.key, pg.value));

@@ -34,7 +34,7 @@ export class CloudWatchStack extends cdk.Construct {
 
         // create cpu cloudwatch alarm
         const cpuAlarm = new cloudwatch.Alarm(this, 'CpuAlarm', {
-            evaluationPeriods: 2,
+            evaluationPeriods: config.cloudwatchAlarms.cpuUtilzEvaluationPeriod,
             metric: this.cpuMetric,
             threshold: config.cloudwatchAlarms.cpuUtilzThreshold,
             period: cdk.Duration.seconds(config.cloudwatchAlarms.cpuUtilzPeriod)
@@ -48,7 +48,7 @@ export class CloudWatchStack extends cdk.Construct {
 
         // create iops cloudwatch alarm
         const iopsAlarm = new cloudwatch.Alarm(this, 'IopsAlarm', {
-            evaluationPeriods: 2,
+            evaluationPeriods: config.cloudwatchAlarms.wrteIopsEvaluationPeriod,
             metric: this.iopsMetric,
             threshold: config.cloudwatchAlarms.wrteIopsThreshold,
             statistic: 'max',

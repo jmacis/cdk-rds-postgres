@@ -29,6 +29,8 @@ export interface CloudwatchConfig {
     wrteIopsThreshold: number;
     cpuUtilzPeriod: number;
     wrteIopsPeriod: number;
+    cpuUtilzEvaluationPeriod: number;
+    wrteIopsEvaluationPeriod: number;
 }
 
 export interface SecretsManagerConfig {
@@ -96,6 +98,8 @@ export function getConfig(): Config {
             wrteIopsThreshold: Number(assert(process.env.CLOUDWATCH_ALARM_WRTE_IOPS_THRESHOLD)),
             cpuUtilzPeriod: Number(assert(process.env.CLOUDWATCH_ALARM_CPU_UTILZ_PERIOD)),
             wrteIopsPeriod: Number(assert(process.env.CLOUDWATCH_ALARM_WRTE_IOPS_PERIOD)),
+            cpuUtilzEvaluationPeriod: Number(assert(process.env.CLOUDWATCH_ALARM_CPU_UTILZ_EVALUATION_PERIOD)),
+            wrteIopsEvaluationPeriod: Number(assert(process.env.CLOUDWATCH_ALARM_WRTE_IOPS_EVALUATION_PERIOD)),
         },
         secretsManager: {
             passwordLength: Number(assert(process.env.SECRETMANAGER_PASSWORD_LENGTH)),

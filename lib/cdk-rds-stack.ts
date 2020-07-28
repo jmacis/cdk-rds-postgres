@@ -9,7 +9,7 @@ export class CdkRdsStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props: cdk.StackProps, config: Config) {
         super(scope, id, props);
 
-        // cmd line arg env
+        // cmdline arg env
         const env = scope.node.tryGetContext('env');
 
         const vpcProps = {
@@ -29,12 +29,12 @@ export class CdkRdsStack extends cdk.Stack {
         // create rds resource
         const rdsStackEntity = new RdsStack(this, 'Rds', rdsProps, config);
 
-        // const snsCloudWatchProps = {
-        //     db: rdsStackEntity.db,
-        //     email: 'johnmacis@gmail.com'
-        // };
+        const snsCloudWatchProps = {
+            db: rdsStackEntity.db,
+            email: 'johnmacis@gmail.com'
+        };
 
-        // // create sns cloudwatch resource
-        // const snsStackEntity = new CloudWatchStack(this, 'SnsCloudWatch', snsCloudWatchProps, config);
+        // create sns cloudwatch resource
+        const snsStackEntity = new CloudWatchStack(this, 'SnsCloudWatch', snsCloudWatchProps, config);
     }
 }
