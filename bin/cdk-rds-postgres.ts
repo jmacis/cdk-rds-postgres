@@ -4,8 +4,10 @@ import * as cdk from '@aws-cdk/core';
 // import { CdkRdsPostgresStack } from '../lib/cdk-rds-postgres-stack';
 import { CdkRdsStack } from '../lib/cdk-rds-stack';
 import { Tag } from '@aws-cdk/core';
-import { stackTagsDev, stackTagsStag, stackTagsProd } from './cdk-config';
+import { stackTags } from './cdk-config';
+// import { stackTagsDev, stackTagsStag, stackTagsProd } from './cdk-config';
 import { getConfig } from './config';
+
 
 const app = new cdk.App();
 
@@ -32,5 +34,5 @@ const stack = new CdkRdsStack(app, 'CdkRdsPostgresStack', {
 // });
 
 // apply tags to stack
-const stackTags = env === 'development' ? stackTagsDev : (env === 'staging' ? stackTagsStag : stackTagsProd);
-stackTags.forEach(tag => Tag.add(stack, tag.name, tag.value));
+// const stackTags = env === 'development' ? stackTagsDev : (env === 'staging' ? stackTagsStag : stackTagsProd);
+stackTags[`${env}`].forEach(tag => Tag.add(stack, tag.name, tag.value));

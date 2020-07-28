@@ -18,14 +18,14 @@ export class VpcStack extends cdk.Construct {
 
         // create vpc resource
         this.privateSubnetConfiguration = {
-            cidrMask: 26,
-            name: 'private',
+            cidrMask: config.vpc.subnetPrivateCidrMask,
+            name: config.vpc.subnetPrivateName,
             subnetType: ec2.SubnetType.ISOLATED,
         };
 
         this.publicSubnetConfiguration = {
-            cidrMask: 26,
-            name: 'public',
+            cidrMask: config.vpc.subnetPublicCidrMask,
+            name: config.vpc.subnetPublicName,
             subnetType: ec2.SubnetType.PUBLIC,
         };
 

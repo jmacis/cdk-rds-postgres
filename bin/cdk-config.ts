@@ -29,6 +29,13 @@ export const stackTagsProd: { name: string, value: string }[] = [
     { name: 'Env', value: 'Production' }
 ];
 
+export const stackTags: { [name: string]: { name: string, value: string }[] } = {
+    development: stackTagsDev,
+    staging: stackTagsStag,
+    production: stackTagsProd
+};
+
+
 export const parameterGroupDev: { key: string, value: string }[] = [
     { key: 'shared_preload_libraries', value: 'auto_explain,pg_stat_statements,pg_hint_plan,pgaudit' },
     { key: 'log_statement', value: 'ddl' },
@@ -79,9 +86,27 @@ export const parameterGroupProd: { key: string, value: string }[] = [
     { key: 'rds.log_retention_period', value: '10080' },
     { key: 'random_page_cost', value: '1' },
     { key: 'track_activity_query_size', value: '16384' },
-    { key: 'idle_in_transaction_session_timeout', value: '60000' },
-    { key: 'statement_timeout', value: '60000' }
+    { key: 'idle_in_transaction_session_timeout', value: '50000' },
+    { key: 'statement_timeout', value: '50000' }
 ];
+
+// export const parameterGroup: { [key: string]: {} } = {
+//     development: parameterGroupDev,
+//     staging: parameterGroupStag,
+//     production: parameterGroupProd
+// };
+
+export const parameterGroup: { [key: string]: { key: string, value: string }[] } = {
+    development: parameterGroupDev,
+    staging: parameterGroupStag,
+    production: parameterGroupProd
+};
+
+// export const parameterGroupTest = {
+//     development: parameterGroupDev,
+//     staging: parameterGroupStag,
+//     production: parameterGroupProd
+// };
 
 // export const parameterGroupDev: { [key: string]: string } = {
 //     'shared_preload_libraries': 'auto_explain,pg_stat_statements,pg_hint_plan,pgaudit',

@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Config } from '../bin/config';
 import * as rds from '@aws-cdk/aws-rds';
 import { parameterGroupDev, parameterGroupStag, parameterGroupProd } from '../bin/cdk-config';
-
+import { parameterGroup } from '../bin/cdk-config';
 export interface ParameterGroupProps {
 
 }
@@ -24,7 +24,7 @@ export class ParameterGroupStack extends cdk.Construct {
 
         // cmdline arg env
         const env = scope.node.tryGetContext('env');
-        const dbParameterGroup = env === 'development' ? parameterGroupDev : (env === 'staging' ? parameterGroupStag : parameterGroupProd);
+        const dbParameterGroup = parameterGroup[`${env}`];
         dbParameterGroup.forEach(pg => this.parameterGroup.addParameter(pg.key, pg.value));
     }
 }

@@ -5,6 +5,10 @@ export interface CertificateConfig {
 
 export interface VpcConfig {
     cidr: string;
+    subnetPublicName: string;
+    subnetPrivateName: string;
+    subnetPublicCidrMask: number;
+    subnetPrivateCidrMask: number;
 }
 
 export interface InstanceConfig {
@@ -63,6 +67,10 @@ export function getConfig(): Config {
         host: assert(process.env.HOST),
         vpc: {
             cidr: assert(process.env.VPC_CIDR),
+            subnetPublicName: assert(process.env.VPC_SUBNET_PUBLIC_NAME),
+            subnetPrivateName: assert(process.env.VPC_SUBNET_PRIVATE_NAME),
+            subnetPublicCidrMask: Number(assert(process.env.VPC_SUBNET_PUBLIC_CIDR_MASK)),
+            subnetPrivateCidrMask: Number(assert(process.env.VPC_SUBNET_PRIVATE_CIDR_MASK)),
         },
         webInstance: {
             instanceType: assert(process.env.WEB_INSTANCE_TYPE),
