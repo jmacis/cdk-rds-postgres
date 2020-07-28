@@ -3,10 +3,10 @@ import { Config } from '../bin/config';
 import * as rds from '@aws-cdk/aws-rds';
 import { parameterGroupDev, parameterGroupStag, parameterGroupProd } from '../bin/cdk-config';
 import { parameterGroup } from '../bin/cdk-config';
+
 export interface ParameterGroupProps {
 
 }
-
 
 export class ParameterGroupStack extends cdk.Construct {
     public readonly parameterGroup: rds.ParameterGroup;
