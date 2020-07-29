@@ -2,7 +2,6 @@ import * as cdk from '@aws-cdk/core';
 import * as secretsManager from '@aws-cdk/aws-secretsmanager';
 import { Config } from '../bin/config';
 
-
 export interface SecretsProps {
     secretName: string;
 }

@@ -8,7 +8,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import cloudwatch_actions = require('@aws-cdk/aws-cloudwatch-actions')
 import { RemovalPolicy, CfnMapping } from '@aws-cdk/core';
 
-; export class CdkRdsPostgresStack extends cdk.Stack {
+export class CdkRdsPostgresStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
