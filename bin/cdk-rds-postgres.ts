@@ -26,8 +26,8 @@ if (process.env.CDK_DEPLOY_REGION === undefined) {
 const config = getConfig();
 const stack = new CdkRdsStack(app, 'CdkRdsPostgresStack', {
     env: {
-        account: process.env.CDK_DEPLOY_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-        region: process.env.CDK_DEPLOY_REGION || process.env.CDK_DEFAULT_REGION
+        account: app.node.tryGetContext('account') || process.env.CDK_DEPLOY_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+        region: app.node.tryGetContext('region') || process.env.CDK_DEPLOY_REGION || process.env.CDK_DEFAULT_REGION
     },
     description: "CDK RDS Postgres Stack"
 }, config);

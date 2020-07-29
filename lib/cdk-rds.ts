@@ -3,13 +3,13 @@ import { Config } from '../bin/config';
 import * as rds from '@aws-cdk/aws-rds';
 import * as logs from '@aws-cdk/aws-logs';
 import * as kms from '@aws-cdk/aws-kms';
-import { Tag } from '@aws-cdk/core';
+import { Tag, ScopedAws } from '@aws-cdk/core';
 import { Vpc, InstanceType, SubnetType } from '@aws-cdk/aws-ec2'
 import { RemovalPolicy } from '@aws-cdk/core';
 import { SecretsStack } from './cdk-secrets';
 import { ParameterGroupStack } from './cdk-parameter-group';
 import { ReadReplicaStack } from './cdk-read-replica';
-import { kmsKeys } from '../bin/cdk-config';
+import { kmsKeys, kmsArnSuffix } from '../bin/cdk-config';
 
 export interface RdsProps {
     vpc: Vpc;
@@ -32,8 +32,10 @@ export class RdsStack extends cdk.Construct {
         // create rds parameter group resource
         this.dbParameterGroup = new ParameterGroupStack(this, 'ParameterGroup', props, config);
 
-        // const arnId = kmsKeys[`${process.env.NODE_ENV}`][`${process.env.CDK_DEPLOY_ACCOUNT}`];
-        // const dbKmsArn = `arn:aws:kms:${process.env.CDK_DEPLOY_REGION}:${process.env.CDK_DEPLOY_ACCOUNT}:key/${arnId}`;
+        // const arnSuffixId = kmsArnSuffix[`${process.env.NODE_ENV}`][`${process.env.CDK_DEPLOY_ACCOUNT}`];
+        // const dbKmsArn = `arn:aws:kms:${process.env.CDK_DEPLOY_REGION}:${process.env.CDK_DEPLOY_ACCOUNT}:key/${arnSuffixId}`;
+        // const dbKmsArn = `arn:aws:kms:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:key/${arnSuffixId}`;
+        // const dbKmsKey = (config.database.storageEncrypted === true) ? kms.Key.fromKeyArn(this, 'KmsKey', dbKmsArn) : undefined;
 
         // create db managed kms key from config
         const dbKmsArn = kmsKeys[`${process.env.NODE_ENV}`][`${process.env.CDK_DEPLOY_REGION}`][`${process.env.CDK_DEPLOY_ACCOUNT}`];

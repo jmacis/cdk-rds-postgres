@@ -97,26 +97,26 @@ export const parameterGroup: { [key: string]: { key: string, value: string }[] }
     production: parameterGroupProd
 };
 
-// export const kmsKeysDev: { [key: string]: string } = {
-//     '009963118558': '80681ad6-9014-4626-87b1-22621d9475ce',
-//     '083258740834': '1184ade0-b88a-411e-ac5c-b9361a5dd40e'
-// };
+export const kmsArnSuffixDev: { [key: string]: string } = {
+    '009963118558': '80681ad6-9014-4626-87b1-22621d9475ce',
+    '083258740834': '1184ade0-b88a-411e-ac5c-b9361a5dd40e'
+};
 
-// export const kmsKeysStag: { [key: string]: string } = {
-//     '009963118558': '80681ad6-9014-4626-87b1-22621d9475ce',
-//     '083258740834': '1184ade0-b88a-411e-ac5c-b9361a5dd40e'
-// };
+export const kmsArnSuffixStag: { [key: string]: string } = {
+    '009963118558': '80681ad6-9014-4626-87b1-22621d9475ce',
+    '083258740834': '1184ade0-b88a-411e-ac5c-b9361a5dd40e'
+};
 
-// export const kmsKeysProd: { [key: string]: string } = {
-//     '009963118558': '80681ad6-9014-4626-87b1-22621d9475ce',
-//     '083258740834': '1184ade0-b88a-411e-ac5c-b9361a5dd40e'
-// };
+export const kmsArnSuffixProd: { [key: string]: string } = {
+    '009963118558': '80681ad6-9014-4626-87b1-22621d9475ce',
+    '083258740834': '1184ade0-b88a-411e-ac5c-b9361a5dd40e'
+};
 
-// export const kmsKeys: { [key: string]: { [key: string]: string } } = {
-//     development: kmsKeysDev,
-//     staging: kmsKeysStag,
-//     production: kmsKeysProd
-// };
+export const kmsArnSuffix: { [key: string]: { [key: string]: string } } = {
+    development: kmsArnSuffixDev,
+    staging: kmsArnSuffixStag,
+    production: kmsArnSuffixProd
+};
 
 export const kmsKeysDev: { [key: string]: { [key: string]: string } } = {
     'us-east-1': {
