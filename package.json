@@ -41,6 +41,7 @@
     "@aws-cdk/aws-cloudwatch": "^1.54.0",
     "@aws-cdk/aws-cloudwatch-actions": "^1.54.0",
     "@aws-cdk/aws-ec2": "^1.54.0",
+    "@aws-cdk/aws-kms": "^1.54.0",
     "@aws-cdk/aws-logs": "^1.54.0",
     "@aws-cdk/aws-rds": "^1.54.0",
     "@aws-cdk/aws-secretsmanager": "^1.54.0",

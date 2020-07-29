@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Config } from '../bin/config';
 import * as rds from '@aws-cdk/aws-rds';
 import * as logs from '@aws-cdk/aws-logs';
+import * as kms from '@aws-cdk/aws-kms';
 // import { Vpc, InstanceType, SecurityGroup, ISubnet } from "@aws-cdk/aws-ec2";
 // import { ParameterGroup, DatabaseInstance, DatabaseInstanceEngine, StorageType } from "@aws-cdk/aws-rds";
 // import * as ec2 from '@aws-cdk/aws-ec2';
@@ -10,8 +11,8 @@ import { Vpc, InstanceType, SubnetType } from '@aws-cdk/aws-ec2'
 import { RemovalPolicy } from '@aws-cdk/core';
 import { SecretsStack } from './cdk-secrets';
 import { ParameterGroupStack } from './cdk-parameter-group';
-// import { parameterGroupDev } from '../bin/cdk-config';
-// import { parameterGroupDev, parameterGroupStag, parameterGroupProd } from '../bin/cdk-config';
+import { ReadReplicaStack } from './cdk-read-replica';
+import { kmsKeys } from '../bin/cdk-config';
 
 export interface RdsProps {
     vpc: Vpc;
@@ -35,30 +36,12 @@ export class RdsStack extends cdk.Construct {
         // create rds parameter group resource
         this.dbParameterGroup = new ParameterGroupStack(this, 'ParameterGroup', props, config);
 
-        // // create rds parameter group
-        // this.parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
-        //     engine: rds.DatabaseInstanceEngine.postgres({
-        //         version: rds.PostgresEngineVersion.VER_11_6
-        //     }),
-        //     description: 'CloudFormation AWS RDS PostgreSQL Database Parameter Group',
-        //     parameters: {
-        //         shared_preload_libraries: 'auto_explain,pg_stat_statements,pg_hint_plan,pgaudit',
-        //         log_statement: 'ddl',
-        //         log_connections: '1',
-        //         log_disconnections: '1',
-        //         log_lock_waits: '1',
-        //         log_min_duration_statement: '5000',
-        //         'auto_explain.log_min_duration': '5000',
-        //         'auto_explain.log_verbose': '1',
-        //         log_rotation_age: '1440',
-        //         log_rotation_size: '102400',
-        //         'rds.log_retention_period': '10080',
-        //         random_page_cost: '1',
-        //         track_activity_query_size: '16384',
-        //         idle_in_transaction_session_timeout: '7200000',
-        //         statement_timeout: '7200000'
-        //     }
-        // });
+        // const arnId = kmsKeys[`${process.env.NODE_ENV}`][`${process.env.CDK_DEPLOY_ACCOUNT}`];
+        // const dbKmsArn = `arn:aws:kms:${process.env.CDK_DEPLOY_REGION}:${process.env.CDK_DEPLOY_ACCOUNT}:key/${arnId}`;
+
+        // create db kms key from config
+        const dbKmsArn = kmsKeys[`${process.env.NODE_ENV}`][`${process.env.CDK_DEPLOY_REGION}`][`${process.env.CDK_DEPLOY_ACCOUNT}`];
+        const dbKmsKey = (config.database.storageEncrypted === true) ? kms.Key.fromKeyArn(this, 'KmsKey', dbKmsArn) : undefined;
 
         // create rds resource
         this.db = new rds.DatabaseInstance(this, 'RdsInstance', {
@@ -76,6 +59,8 @@ export class RdsStack extends cdk.Construct {
             multiAz: config.database.multiAz,
             parameterGroup: this.dbParameterGroup.parameterGroup,
             vpcPlacement: { subnetType: SubnetType.PUBLIC },
+            preferredBackupWindow: config.database.preferredBackupWindow,
+            preferredMaintenanceWindow: config.database.preferredMaintenanceWindow,
             backupRetention: cdk.Duration.days(config.database.backupRetention),
             cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
             autoMinorVersionUpgrade: false,
@@ -83,7 +68,9 @@ export class RdsStack extends cdk.Construct {
             maxAllocatedStorage: config.database.maxAllocatedStorage,
             deleteAutomatedBackups: true,
             removalPolicy: RemovalPolicy.DESTROY,
-            deletionProtection: false
+            deletionProtection: false,
+            storageEncrypted: config.database.storageEncrypted,
+            storageEncryptionKey: dbKmsKey
         });
 
         // add tags to db master
@@ -92,23 +79,13 @@ export class RdsStack extends cdk.Construct {
         // create ingress rule port 5432
         this.db.connections.allowDefaultPortFromAnyIpv4();
 
-        //create rds db read replica
-        this.replica = new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
-            instanceIdentifier: 'cdk-rds-postgres-read',
-            instanceType: new InstanceType(config.database.instanceType),
-            // instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
-            sourceDatabaseInstance: this.db,
+        const readReplicaProps = {
             vpc: props.vpc,
-            vpcPlacement: { subnetType: SubnetType.PUBLIC },
-            deleteAutomatedBackups: true,
-            removalPolicy: RemovalPolicy.DESTROY,
-            deletionProtection: false
-        });
+            db: this.db
+        };
 
-        // add tags to db replica
-        Tag.add(this.replica, 'Name', 'Read Replica Database');
-
-        // create ingress rule port 5432
-        this.replica.connections.allowDefaultPortFromAnyIpv4();
+        // create rds db read replica
+        if (config.database.readReplicaEnabled)
+            new ReadReplicaStack(this, 'ReadReplica', readReplicaProps, config);
     }
 }

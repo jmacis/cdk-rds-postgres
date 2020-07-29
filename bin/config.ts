@@ -26,6 +26,8 @@ export interface DatabaseConfig {
     preferredBackupWindow: string;
     backupRetention: number;
     multiAz: boolean;
+    readReplicaEnabled: boolean;
+    storageEncrypted: boolean;
 }
 
 export interface CloudwatchConfig {
@@ -96,6 +98,8 @@ export function getConfig(): Config {
             preferredMaintenanceWindow: assert(process.env.DATABASE_PREFERRED_MAINTENANCE_WINDOW),
             backupRetention: Number(assert(process.env.DATABASE_BACKUP_RETENTION)),
             multiAz: assert(process.env.DATABASE_MULTI_AZ) === "true",
+            readReplicaEnabled: assert(process.env.DATABASE_READ_REPLICA_ENABLED) === "true",
+            storageEncrypted: assert(process.env.DATABASE_STORAGE_ENCRYPTED) === "true",
         },
         certificate: {
             apNortheastOneCertificateArn: assert(process.env.CERTIFICATE_ARN_AP_NORTHEAST_ONE),

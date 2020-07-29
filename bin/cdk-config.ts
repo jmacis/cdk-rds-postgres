@@ -29,12 +29,12 @@ export const stackTagsProd: { name: string, value: string }[] = [
     { name: 'Env', value: 'Production' }
 ];
 
+// stack tags
 export const stackTags: { [name: string]: { name: string, value: string }[] } = {
     development: stackTagsDev,
     staging: stackTagsStag,
     production: stackTagsProd
 };
-
 
 export const parameterGroupDev: { key: string, value: string }[] = [
     { key: 'shared_preload_libraries', value: 'auto_explain,pg_stat_statements,pg_hint_plan,pgaudit' },
@@ -90,17 +90,80 @@ export const parameterGroupProd: { key: string, value: string }[] = [
     { key: 'statement_timeout', value: '50000' }
 ];
 
-// export const parameterGroup: { [key: string]: {} } = {
-//     development: parameterGroupDev,
-//     staging: parameterGroupStag,
-//     production: parameterGroupProd
-// };
-
+// db parameter group
 export const parameterGroup: { [key: string]: { key: string, value: string }[] } = {
     development: parameterGroupDev,
     staging: parameterGroupStag,
     production: parameterGroupProd
 };
+
+// export const kmsKeysDev: { [key: string]: string } = {
+//     '009963118558': '80681ad6-9014-4626-87b1-22621d9475ce',
+//     '083258740834': '1184ade0-b88a-411e-ac5c-b9361a5dd40e'
+// };
+
+// export const kmsKeysStag: { [key: string]: string } = {
+//     '009963118558': '80681ad6-9014-4626-87b1-22621d9475ce',
+//     '083258740834': '1184ade0-b88a-411e-ac5c-b9361a5dd40e'
+// };
+
+// export const kmsKeysProd: { [key: string]: string } = {
+//     '009963118558': '80681ad6-9014-4626-87b1-22621d9475ce',
+//     '083258740834': '1184ade0-b88a-411e-ac5c-b9361a5dd40e'
+// };
+
+// export const kmsKeys: { [key: string]: { [key: string]: string } } = {
+//     development: kmsKeysDev,
+//     staging: kmsKeysStag,
+//     production: kmsKeysProd
+// };
+
+
+export const kmsKeysDev: { [key: string]: { [key: string]: string } } = {
+    'us-east-1': {
+        '009963118558': 'arn:aws:kms:us-east-1:009963118558:key/80681ad6-9014-4626-87b1-22621d9475ce',
+        '083258740834': 'arn:aws:kms:us-east-1:083258740834:key/1184ade0-b88a-411e-ac5c-b9361a5dd40e'
+    },
+    'us-west-2': {
+        '009963118558': 'a682614e-125c-4c38-b0e0-2d03df58962c',
+        '083258740834': '1184ade0-b88a-411e-ac5c-b9361a5dd40e'
+    }
+};
+
+export const kmsKeysStag: { [key: string]: { [key: string]: string } } = {
+    'us-east-1': {
+        '009963118558': 'arn:aws:kms:us-east-1:009963118558:key/80681ad6-9014-4626-87b1-22621d9475ce',
+        '083258740834': 'arn:aws:kms:us-east-1:083258740834:key/1184ade0-b88a-411e-ac5c-b9361a5dd40e'
+    },
+    'us-west-2': {
+        '009963118558': 'a682614e-125c-4c38-b0e0-2d03df58962c',
+        '083258740834': '1184ade0-b88a-411e-ac5c-b9361a5dd40e'
+    }
+};
+
+export const kmsKeysProd: { [key: string]: { [key: string]: string } } = {
+    'us-east-1': {
+        '009963118558': 'arn:aws:kms:us-east-1:009963118558:key/80681ad6-9014-4626-87b1-22621d9475ce',
+        '083258740834': 'arn:aws:kms:us-east-1:083258740834:key/1184ade0-b88a-411e-ac5c-b9361a5dd40e'
+    },
+    'us-west-2': {
+        '009963118558': 'a682614e-125c-4c38-b0e0-2d03df58962c',
+        '083258740834': '1184ade0-b88a-411e-ac5c-b9361a5dd40e'
+    }
+};
+
+// managed kms keys
+export const kmsKeys: { [key: string]: { [key: string]: { [key: string]: string } } } = {
+    development: kmsKeysDev,
+    staging: kmsKeysStag,
+    production: kmsKeysProd
+};
+
+// export const parameterGroup: { [key: string]: {} } = {
+//     development: parameterGroupDev,
+//     staging: parameterGroupStag,
+//     production: parameterGroupProd
+// };
 
 // export const parameterGroupTest = {
 //     development: parameterGroupDev,
