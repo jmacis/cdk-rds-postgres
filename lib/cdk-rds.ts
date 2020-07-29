@@ -38,14 +38,15 @@ export class RdsStack extends cdk.Construct {
         // const dbKmsKey = (config.database.storageEncrypted === true) ? kms.Key.fromKeyArn(this, 'KmsKey', dbKmsArn) : undefined;
 
         // create db managed kms key from config
+        // const test: string | undefined = process.env.NODE_ENV;
         const dbKmsArn = kmsKeys[`${process.env.NODE_ENV}`][`${process.env.CDK_DEPLOY_REGION}`][`${process.env.CDK_DEPLOY_ACCOUNT}`];
         const dbKmsKey = (config.database.storageEncrypted === true) ? kms.Key.fromKeyArn(this, 'KmsKey', dbKmsArn) : undefined;
-
+        console.log(config.database.engineVersion);
         // create rds resource
         this.db = new rds.DatabaseInstance(this, 'RdsInstance', {
             instanceIdentifier: 'cdk-rds-postgres',
             engine: rds.DatabaseInstanceEngine.postgres({
-                version: rds.PostgresEngineVersion.VER_11_6
+                version: config.database.engineVersion
             }),
             // masterUsername: config.database.masterUsername,
             masterUsername: this.dbSecret.secret.secretValueFromJson('username').toString(),

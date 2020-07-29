@@ -1,3 +1,10 @@
+import { Construct } from '@aws-cdk/core';
+import { PostgresEngineVersion } from '@aws-cdk/aws-rds';
+
+const env: string | undefined = process.env.NODE_ENV;
+const region: string | undefined = process.env.CDK_DEPLOY_REGION;
+const account: string | undefined = process.env.CDK_DEPLOY_ACCOUNT;
+
 export interface VpcConfig {
     cidr: string;
     subnetPublicName: string;
@@ -23,6 +30,7 @@ export interface DatabaseConfig {
     multiAz: boolean;
     readReplicaEnabled: boolean;
     storageEncrypted: boolean;
+    engineVersion: PostgresEngineVersion;
 }
 
 export interface CloudwatchConfig {
@@ -49,7 +57,7 @@ export interface Config {
     secretsManager: SecretsManagerConfig;
 }
 
-function assert(value: any): string {
+function assert(value: any): any {
     if (!value) {
         throw new Error("Invalid string input");
     }
@@ -82,6 +90,7 @@ export function getConfig(): Config {
             multiAz: assert(process.env.DATABASE_MULTI_AZ) === "true",
             readReplicaEnabled: assert(process.env.DATABASE_READ_REPLICA_ENABLED) === "true",
             storageEncrypted: assert(process.env.DATABASE_STORAGE_ENCRYPTED) === "true",
+            engineVersion: assert(dbEngineVersion[`${env}`][`${region}`][`${account}`]),
         },
         cloudwatchAlarms: {
             cpuUtilzThreshold: Number(assert(process.env.CLOUDWATCH_ALARM_CPU_UTILZ_THRESHOLD)),
@@ -98,3 +107,47 @@ export function getConfig(): Config {
         }
     };
 }
+
+export function getConfigContext(scope: Construct, prop: string): string {
+    return scope.node.tryGetContext(prop);
+}
+
+export const dbEngineVersionDev: { [key: string]: { [key: string]: PostgresEngineVersion } } = {
+    'us-east-1': {
+        '009963118558': PostgresEngineVersion.VER_11_7,
+        '083258740834': PostgresEngineVersion.VER_11_7,
+    },
+    'us-west-2': {
+        '009963118558': PostgresEngineVersion.VER_11_7,
+        '083258740834': PostgresEngineVersion.VER_11_7,
+    }
+};
+
+export const dbEngineVersionStag: { [key: string]: { [key: string]: PostgresEngineVersion } } = {
+    'us-east-1': {
+        '009963118558': PostgresEngineVersion.VER_11_6,
+        '083258740834': PostgresEngineVersion.VER_11_6,
+    },
+    'us-west-2': {
+        '009963118558': PostgresEngineVersion.VER_11_6,
+        '083258740834': PostgresEngineVersion.VER_11_6,
+    }
+};
+
+export const dbEngineVersionProd: { [key: string]: { [key: string]: PostgresEngineVersion } } = {
+    'us-east-1': {
+        '009963118558': PostgresEngineVersion.VER_11_6,
+        '083258740834': PostgresEngineVersion.VER_11_6,
+    },
+    'us-west-2': {
+        '009963118558': PostgresEngineVersion.VER_11_6,
+        '083258740834': PostgresEngineVersion.VER_11_6,
+    }
+};
+
+// db engine version mapping
+export const dbEngineVersion: { [key: string]: { [key: string]: { [key: string]: PostgresEngineVersion } } } = {
+    development: dbEngineVersionDev,
+    staging: dbEngineVersionStag,
+    production: dbEngineVersionProd
+};

@@ -5,7 +5,8 @@ import * as cdk from '@aws-cdk/core';
 import { CdkRdsStack } from '../lib/cdk-rds-stack';
 import { Tag } from '@aws-cdk/core';
 import { stackTags } from './cdk-config';
-import { getConfig } from './config';
+import { getConfig, getConfigContext } from './config';
+import { exit } from 'process';
 
 
 const app = new cdk.App();
