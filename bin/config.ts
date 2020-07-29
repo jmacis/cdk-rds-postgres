@@ -1,8 +1,3 @@
-export interface CertificateConfig {
-    apNortheastOneCertificateArn: string;
-    usEastOneCertificateArn: string;
-}
-
 export interface VpcConfig {
     cidr: string;
     subnetPublicName: string;
@@ -49,10 +44,7 @@ export interface Config {
     host: string;
     vpc: VpcConfig;
     webInstance: InstanceConfig;
-    diagnosisInstance: InstanceConfig;
-    batchInstance: InstanceConfig;
     database: DatabaseConfig;
-    certificate: CertificateConfig;
     cloudwatchAlarms: CloudwatchConfig;
     secretsManager: SecretsManagerConfig;
 }
@@ -79,16 +71,6 @@ export function getConfig(): Config {
             volumeSize: Number(assert(process.env.WEB_INSTANCE_VOLUME_SIZE)),
             keyName: assert(process.env.WEB_INSTANCE_KEY_NAME),
         },
-        diagnosisInstance: {
-            instanceType: assert(process.env.DIAGNOSIS_INSTANCE_TYPE),
-            volumeSize: Number(assert(process.env.DIAGNOSIS_INSTANCE_VOLUME_SIZE)),
-            keyName: assert(process.env.DIAGNOSIS_INSTANCE_KEY_NAME),
-        },
-        batchInstance: {
-            instanceType: assert(process.env.BATCH_INSTANCE_TYPE),
-            volumeSize: Number(assert(process.env.BATCH_INSTANCE_VOLUME_SIZE)),
-            keyName: assert(process.env.BATCH_INSTANCE_KEY_NAME),
-        },
         database: {
             instanceType: assert(process.env.DATABASE_INSTANCE_TYPE),
             allocatedStorage: Number(assert(process.env.DATABASE_ALLOCATED_STORAGE)),
@@ -100,10 +82,6 @@ export function getConfig(): Config {
             multiAz: assert(process.env.DATABASE_MULTI_AZ) === "true",
             readReplicaEnabled: assert(process.env.DATABASE_READ_REPLICA_ENABLED) === "true",
             storageEncrypted: assert(process.env.DATABASE_STORAGE_ENCRYPTED) === "true",
-        },
-        certificate: {
-            apNortheastOneCertificateArn: assert(process.env.CERTIFICATE_ARN_AP_NORTHEAST_ONE),
-            usEastOneCertificateArn: assert(process.env.CERTIFICATE_ARN_US_EAST_ONE),
         },
         cloudwatchAlarms: {
             cpuUtilzThreshold: Number(assert(process.env.CLOUDWATCH_ALARM_CPU_UTILZ_THRESHOLD)),

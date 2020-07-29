@@ -9,8 +9,9 @@ export class CdkRdsStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props: cdk.StackProps, config: Config) {
         super(scope, id, props);
 
-        console.log(props.env?.account);
-        console.log(props.env?.region);
+        // console.log(props.env?.account);
+        // console.log(props.env?.region);
+
         // cmdline arg env
         const env = scope.node.tryGetContext('env');
 
