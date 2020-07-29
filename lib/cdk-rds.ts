@@ -3,9 +3,6 @@ import { Config } from '../bin/config';
 import * as rds from '@aws-cdk/aws-rds';
 import * as logs from '@aws-cdk/aws-logs';
 import * as kms from '@aws-cdk/aws-kms';
-// import { Vpc, InstanceType, SecurityGroup, ISubnet } from "@aws-cdk/aws-ec2";
-// import { ParameterGroup, DatabaseInstance, DatabaseInstanceEngine, StorageType } from "@aws-cdk/aws-rds";
-// import * as ec2 from '@aws-cdk/aws-ec2';
 import { Tag } from '@aws-cdk/core';
 import { Vpc, InstanceType, SubnetType } from '@aws-cdk/aws-ec2'
 import { RemovalPolicy } from '@aws-cdk/core';
@@ -19,7 +16,6 @@ export interface RdsProps {
     databaseName: string;
     secretName: string;
 }
-
 
 export class RdsStack extends cdk.Construct {
     public readonly db: rds.DatabaseInstance;
@@ -39,7 +35,7 @@ export class RdsStack extends cdk.Construct {
         // const arnId = kmsKeys[`${process.env.NODE_ENV}`][`${process.env.CDK_DEPLOY_ACCOUNT}`];
         // const dbKmsArn = `arn:aws:kms:${process.env.CDK_DEPLOY_REGION}:${process.env.CDK_DEPLOY_ACCOUNT}:key/${arnId}`;
 
-        // create db kms key from config
+        // create db managed kms key from config
         const dbKmsArn = kmsKeys[`${process.env.NODE_ENV}`][`${process.env.CDK_DEPLOY_REGION}`][`${process.env.CDK_DEPLOY_ACCOUNT}`];
         const dbKmsKey = (config.database.storageEncrypted === true) ? kms.Key.fromKeyArn(this, 'KmsKey', dbKmsArn) : undefined;
 

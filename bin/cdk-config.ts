@@ -151,7 +151,7 @@ export const kmsKeysProd: { [key: string]: { [key: string]: string } } = {
     }
 };
 
-// managed kms keys
+// managed aws/rds kms keys
 export const kmsKeys: { [key: string]: { [key: string]: { [key: string]: string } } } = {
     development: kmsKeysDev,
     staging: kmsKeysStag,
