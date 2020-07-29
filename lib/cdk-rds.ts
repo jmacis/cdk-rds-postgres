@@ -41,7 +41,8 @@ export class RdsStack extends cdk.Construct {
         // const test: string | undefined = process.env.NODE_ENV;
         const dbKmsArn = kmsKeys[`${process.env.NODE_ENV}`][`${process.env.CDK_DEPLOY_REGION}`][`${process.env.CDK_DEPLOY_ACCOUNT}`];
         const dbKmsKey = (config.database.storageEncrypted === true) ? kms.Key.fromKeyArn(this, 'KmsKey', dbKmsArn) : undefined;
-        console.log(config.database.engineVersion);
+        // console.log(config.database.engineVersion);
+
         // create rds resource
         this.db = new rds.DatabaseInstance(this, 'RdsInstance', {
             instanceIdentifier: 'cdk-rds-postgres',
@@ -61,7 +62,7 @@ export class RdsStack extends cdk.Construct {
             preferredBackupWindow: config.database.preferredBackupWindow,
             preferredMaintenanceWindow: config.database.preferredMaintenanceWindow,
             backupRetention: cdk.Duration.days(config.database.backupRetention),
-            cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+            cloudwatchLogsRetention: config.database.cloudwatchLogsRetention,
             autoMinorVersionUpgrade: false,
             allocatedStorage: config.database.allocatedStorage,
             maxAllocatedStorage: config.database.maxAllocatedStorage,

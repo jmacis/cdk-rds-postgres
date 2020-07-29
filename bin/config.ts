@@ -1,5 +1,6 @@
 import { Construct } from '@aws-cdk/core';
 import { PostgresEngineVersion } from '@aws-cdk/aws-rds';
+import { RetentionDays } from '@aws-cdk/aws-logs';
 
 const env: string | undefined = process.env.NODE_ENV;
 const region: string | undefined = process.env.CDK_DEPLOY_REGION;
@@ -31,6 +32,7 @@ export interface DatabaseConfig {
     readReplicaEnabled: boolean;
     storageEncrypted: boolean;
     engineVersion: PostgresEngineVersion;
+    cloudwatchLogsRetention: RetentionDays;
 }
 
 export interface CloudwatchConfig {
@@ -90,7 +92,9 @@ export function getConfig(): Config {
             multiAz: assert(process.env.DATABASE_MULTI_AZ) === "true",
             readReplicaEnabled: assert(process.env.DATABASE_READ_REPLICA_ENABLED) === "true",
             storageEncrypted: assert(process.env.DATABASE_STORAGE_ENCRYPTED) === "true",
-            engineVersion: assert(dbEngineVersion[`${env}`][`${region}`][`${account}`]),
+            engineVersion: assert(configProps[`${env}`][`${region}`][`${account}`].engineVersion),
+            cloudwatchLogsRetention: assert(configProps[`${env}`][`${region}`][`${account}`].cloudwatchLogsRetention),
+            // engineVersion: assert(dbEngineVersion[`${env}`][`${region}`][`${account}`]),
         },
         cloudwatchAlarms: {
             cpuUtilzThreshold: Number(assert(process.env.CLOUDWATCH_ALARM_CPU_UTILZ_THRESHOLD)),
@@ -151,3 +155,96 @@ export const dbEngineVersion: { [key: string]: { [key: string]: { [key: string]:
     staging: dbEngineVersionStag,
     production: dbEngineVersionProd
 };
+
+export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: any } } } = {
+    'us-east-1': {
+        '009963118558': {
+            engineVersion: PostgresEngineVersion.VER_11_7,
+            cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            fooBar: 'hello',
+        },
+        '083258740834': {
+            engineVersion: PostgresEngineVersion.VER_11_7,
+            cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            fooBar: '',
+        }
+    },
+    'us-west-2': {
+        '009963118558': {
+            engineVersion: PostgresEngineVersion.VER_11_7,
+            cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            fooBar: '',
+        },
+        '083258740834': {
+            engineVersion: PostgresEngineVersion.VER_11_7,
+            cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            fooBar: '',
+        }
+    }
+};
+
+export const configPropsStag: { [key: string]: { [key: string]: { [key: string]: any } } } = {
+    'us-east-1': {
+        '009963118558': {
+            engineVersion: PostgresEngineVersion.VER_11_6,
+            cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            fooBar: '',
+        },
+        '083258740834': {
+            engineVersion: PostgresEngineVersion.VER_11_6,
+            cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            fooBar: '',
+        }
+    },
+    'us-west-2': {
+        '009963118558': {
+            engineVersion: PostgresEngineVersion.VER_11_6,
+            cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            fooBar: '',
+        },
+        '083258740834': {
+            engineVersion: PostgresEngineVersion.VER_11_6,
+            cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            fooBar: '',
+        }
+    }
+};
+
+
+export const configPropsProd: { [key: string]: { [key: string]: { [key: string]: any } } } = {
+    'us-east-1': {
+        '009963118558': {
+            engineVersion: PostgresEngineVersion.VER_11_6,
+            cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
+            fooBar: '',
+        },
+        '083258740834': {
+            engineVersion: PostgresEngineVersion.VER_11_6,
+            cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
+            fooBar: '',
+        }
+    },
+    'us-west-2': {
+        '009963118558': {
+            engineVersion: PostgresEngineVersion.VER_11_6,
+            cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
+            fooBar: '',
+        },
+        '083258740834': {
+            engineVersion: PostgresEngineVersion.VER_11_6,
+            cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
+            fooBar: '',
+        }
+    }
+};
+
+
+export const configProps: { [key: string]: { [key: string]: { [key: string]: { [key: string]: any } } } } = {
+    development: configPropsDev,
+    staging: configPropsStag,
+    production: configPropsProd
+};
+
+
+// console.log(configProps[`${env}`][`${region}`][`${account}`].engineVersion);
+// console.log(configProps[`${env}`][`${region}`][`${account}`].cloudwatchLogsRetention);
