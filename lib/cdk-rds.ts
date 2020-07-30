@@ -38,10 +38,8 @@ export class RdsStack extends cdk.Construct {
         // const dbKmsKey = (config.database.storageEncrypted === true) ? kms.Key.fromKeyArn(this, 'KmsKey', dbKmsArn) : undefined;
 
         // create db managed kms key from config
-        // const test: string | undefined = process.env.NODE_ENV;
         const dbKmsArn = kmsKeys[`${process.env.NODE_ENV}`][`${process.env.CDK_DEPLOY_REGION}`][`${process.env.CDK_DEPLOY_ACCOUNT}`];
         const dbKmsKey = (config.database.storageEncrypted === true) ? kms.Key.fromKeyArn(this, 'KmsKey', dbKmsArn) : undefined;
-        // console.log(config.database.engineVersion);
 
         // create rds resource
         this.db = new rds.DatabaseInstance(this, 'RdsInstance', {
@@ -66,9 +64,9 @@ export class RdsStack extends cdk.Construct {
             autoMinorVersionUpgrade: false,
             allocatedStorage: config.database.allocatedStorage,
             maxAllocatedStorage: config.database.maxAllocatedStorage,
-            deleteAutomatedBackups: true,
+            deleteAutomatedBackups: config.database.deleteAutomatedBackups,
             removalPolicy: RemovalPolicy.DESTROY,
-            deletionProtection: false,
+            deletionProtection: config.database.deletionProtection,
             storageEncrypted: config.database.storageEncrypted,
             storageEncryptionKey: dbKmsKey
         });

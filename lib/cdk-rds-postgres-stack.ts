@@ -89,7 +89,7 @@ export class CdkRdsPostgresStack extends cdk.Stack {
       type: 'String',
       default: 12.3,
       allowedValues: ['12.3', '11.7'],
-      description: 'Multi-AZ master database'
+      description: 'Select Database Engine Version'
     });
 
     const privateSubnetConfiguration = {

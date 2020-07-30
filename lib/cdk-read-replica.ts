@@ -24,9 +24,9 @@ export class ReadReplicaStack extends cdk.Construct {
             sourceDatabaseInstance: props.db,
             vpc: props.vpc,
             vpcPlacement: { subnetType: SubnetType.PUBLIC },
-            deleteAutomatedBackups: true,
+            deleteAutomatedBackups: config.database.deleteAutomatedBackups,
             removalPolicy: RemovalPolicy.DESTROY,
-            deletionProtection: false
+            deletionProtection: config.database.deletionProtection
         });
 
         // add tags to db replica

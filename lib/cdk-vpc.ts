@@ -36,7 +36,7 @@ export class VpcStack extends cdk.Construct {
                 this.privateSubnetConfiguration,
                 this.publicSubnetConfiguration
             ],
-            natGateways: 0
+            natGateways: config.vpc.natGateways
         })
     }
 }

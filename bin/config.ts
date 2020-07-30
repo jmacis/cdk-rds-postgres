@@ -12,6 +12,7 @@ export interface VpcConfig {
     subnetPrivateName: string;
     subnetPublicCidrMask: number;
     subnetPrivateCidrMask: number;
+    natGateways: number;
 }
 
 export interface InstanceConfig {
@@ -31,6 +32,8 @@ export interface DatabaseConfig {
     multiAz: boolean;
     readReplicaEnabled: boolean;
     storageEncrypted: boolean;
+    deleteAutomatedBackups: boolean;
+    deletionProtection: boolean;
     engineVersion: PostgresEngineVersion;
     cloudwatchLogsRetention: RetentionDays;
 }
@@ -75,6 +78,7 @@ export function getConfig(): Config {
             subnetPrivateName: assert(process.env.VPC_SUBNET_PRIVATE_NAME),
             subnetPublicCidrMask: Number(assert(process.env.VPC_SUBNET_PUBLIC_CIDR_MASK)),
             subnetPrivateCidrMask: Number(assert(process.env.VPC_SUBNET_PRIVATE_CIDR_MASK)),
+            natGateways: Number(assert(process.env.VPC_NAT_GATEWAYS)),
         },
         webInstance: {
             instanceType: assert(process.env.WEB_INSTANCE_TYPE),
@@ -92,9 +96,10 @@ export function getConfig(): Config {
             multiAz: assert(process.env.DATABASE_MULTI_AZ) === "true",
             readReplicaEnabled: assert(process.env.DATABASE_READ_REPLICA_ENABLED) === "true",
             storageEncrypted: assert(process.env.DATABASE_STORAGE_ENCRYPTED) === "true",
+            deleteAutomatedBackups: assert(process.env.DATABASE_DELETE_AUTOMATED_BACKUPS) === "true",
+            deletionProtection: assert(process.env.DATABASE_DELETION_PROTECTION) === "true",
             engineVersion: assert(configProps[`${env}`][`${region}`][`${account}`].engineVersion),
             cloudwatchLogsRetention: assert(configProps[`${env}`][`${region}`][`${account}`].cloudwatchLogsRetention),
-            // engineVersion: assert(dbEngineVersion[`${env}`][`${region}`][`${account}`]),
         },
         cloudwatchAlarms: {
             cpuUtilzThreshold: Number(assert(process.env.CLOUDWATCH_ALARM_CPU_UTILZ_THRESHOLD)),
@@ -116,69 +121,25 @@ export function getConfigContext(scope: Construct, prop: string): string {
     return scope.node.tryGetContext(prop);
 }
 
-export const dbEngineVersionDev: { [key: string]: { [key: string]: PostgresEngineVersion } } = {
-    'us-east-1': {
-        '009963118558': PostgresEngineVersion.VER_11_7,
-        '083258740834': PostgresEngineVersion.VER_11_7,
-    },
-    'us-west-2': {
-        '009963118558': PostgresEngineVersion.VER_11_7,
-        '083258740834': PostgresEngineVersion.VER_11_7,
-    }
-};
-
-export const dbEngineVersionStag: { [key: string]: { [key: string]: PostgresEngineVersion } } = {
-    'us-east-1': {
-        '009963118558': PostgresEngineVersion.VER_11_6,
-        '083258740834': PostgresEngineVersion.VER_11_6,
-    },
-    'us-west-2': {
-        '009963118558': PostgresEngineVersion.VER_11_6,
-        '083258740834': PostgresEngineVersion.VER_11_6,
-    }
-};
-
-export const dbEngineVersionProd: { [key: string]: { [key: string]: PostgresEngineVersion } } = {
-    'us-east-1': {
-        '009963118558': PostgresEngineVersion.VER_11_6,
-        '083258740834': PostgresEngineVersion.VER_11_6,
-    },
-    'us-west-2': {
-        '009963118558': PostgresEngineVersion.VER_11_6,
-        '083258740834': PostgresEngineVersion.VER_11_6,
-    }
-};
-
-// db engine version mapping
-export const dbEngineVersion: { [key: string]: { [key: string]: { [key: string]: PostgresEngineVersion } } } = {
-    development: dbEngineVersionDev,
-    staging: dbEngineVersionStag,
-    production: dbEngineVersionProd
-};
-
 export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: any } } } = {
     'us-east-1': {
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            fooBar: 'hello',
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            fooBar: '',
         }
     },
     'us-west-2': {
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            fooBar: '',
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            fooBar: '',
         }
     }
 };
@@ -188,28 +149,23 @@ export const configPropsStag: { [key: string]: { [key: string]: { [key: string]:
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            fooBar: '',
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            fooBar: '',
         }
     },
     'us-west-2': {
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            fooBar: '',
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            fooBar: '',
         }
     }
 };
-
 
 export const configPropsProd: { [key: string]: { [key: string]: { [key: string]: any } } } = {
     'us-east-1': {
@@ -238,13 +194,11 @@ export const configPropsProd: { [key: string]: { [key: string]: { [key: string]:
     }
 };
 
-
 export const configProps: { [key: string]: { [key: string]: { [key: string]: { [key: string]: any } } } } = {
     development: configPropsDev,
     staging: configPropsStag,
     production: configPropsProd
 };
-
 
 // console.log(configProps[`${env}`][`${region}`][`${account}`].engineVersion);
 // console.log(configProps[`${env}`][`${region}`][`${account}`].cloudwatchLogsRetention);
