@@ -124,7 +124,7 @@ export const kmsKeysDev: { [key: string]: { [key: string]: string } } = {
         '083258740834': 'arn:aws:kms:us-east-1:083258740834:key/1184ade0-b88a-411e-ac5c-b9361a5dd40e'
     },
     'us-west-2': {
-        '009963118558': 'arn:aws:kms:us-east-1:009963118558:key/80681ad6-9014-4626-87b1-22621d9475ce',
+        '009963118558': 'arn:aws:kms:us-west-2:009963118558:key/df817933-1c66-4f14-83df-af064faf35bd',
         '083258740834': 'arn:aws:kms:us-east-1:083258740834:key/1184ade0-b88a-411e-ac5c-b9361a5dd40e'
     }
 };
@@ -135,7 +135,7 @@ export const kmsKeysStag: { [key: string]: { [key: string]: string } } = {
         '083258740834': 'arn:aws:kms:us-east-1:083258740834:key/1184ade0-b88a-411e-ac5c-b9361a5dd40e'
     },
     'us-west-2': {
-        '009963118558': 'arn:aws:kms:us-east-1:009963118558:key/80681ad6-9014-4626-87b1-22621d9475ce',
+        '009963118558': 'arn:aws:kms:us-west-2:009963118558:key/df817933-1c66-4f14-83df-af064faf35bd',
         '083258740834': 'arn:aws:kms:us-east-1:083258740834:key/1184ade0-b88a-411e-ac5c-b9361a5dd40e'
     }
 };

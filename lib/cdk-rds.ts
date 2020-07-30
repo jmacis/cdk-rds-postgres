@@ -68,7 +68,7 @@ export class RdsStack extends cdk.Construct {
             removalPolicy: RemovalPolicy.DESTROY,
             deletionProtection: config.database.deletionProtection,
             storageEncrypted: config.database.storageEncrypted,
-            storageEncryptionKey: dbKmsKey
+            // storageEncryptionKey: dbKmsKey
         });
 
         // add tags to db master
