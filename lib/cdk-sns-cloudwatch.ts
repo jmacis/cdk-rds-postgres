@@ -57,5 +57,11 @@ export class CloudWatchStack extends cdk.Construct {
 
         // add rds iops alarm to sns topic
         iopsAlarm.addAlarmAction(new cloudwatch_actions.SnsAction(this.topic));
+
+        // create cfn output sns topic
+        new cdk.CfnOutput(this, 'SnsTopicOutput', {
+            description: 'CDK SNS Topic',
+            value: `https://console.aws.amazon.com/sns/home?region=${this.topic.stack.region}#/topic/${this.topic.topicArn}`
+        });
     }
 }

@@ -10,6 +10,7 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
+    "ppredeploy": "npm run build",
     "deploy": "cdk deploy -c env=$NODE_ENV --profile ext-jmacis",
     "deploy:development": "NODE_ENV=development dotenv -e .env.development yarn run deploy",
     "deploy:staging": "NODE_ENV=staging dotenv -e .env.staging yarn run deploy",

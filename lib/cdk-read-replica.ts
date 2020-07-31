@@ -34,5 +34,12 @@ export class ReadReplicaStack extends cdk.Construct {
 
         // create ingress rule port 5432
         this.replica.connections.allowDefaultPortFromAnyIpv4();
+
+        // create cfn output db end point address
+        new cdk.CfnOutput(this, 'ReadReplicaEndPoint', {
+            description: 'CDK Read Replica Endpoint Address',
+            value: this.replica.dbInstanceEndpointAddress,
+            exportName: 'ReadReplicaEndPoint'
+        });
     }
 }
