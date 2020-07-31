@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Config } from '../bin/config';
 import * as rds from '@aws-cdk/aws-rds';
-import { Tag } from '@aws-cdk/core';
+import { Tag, CfnOutput } from '@aws-cdk/core';
 import { Vpc, InstanceType, SubnetType } from '@aws-cdk/aws-ec2'
 import { RemovalPolicy } from '@aws-cdk/core';
 
@@ -36,7 +36,7 @@ export class ReadReplicaStack extends cdk.Construct {
         this.replica.connections.allowDefaultPortFromAnyIpv4();
 
         // create cfn output db end point address
-        new cdk.CfnOutput(this, 'ReadReplicaEndPoint', {
+        new CfnOutput(this, 'ReadReplicaEndPoint', {
             description: 'CDK Read Replica Endpoint Address',
             value: this.replica.dbInstanceEndpointAddress,
             exportName: 'ReadReplicaEndPoint'
