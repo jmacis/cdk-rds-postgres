@@ -76,38 +76,5 @@ export class VpcStack extends cdk.Construct {
                 vpcId: vpcId
             });
         }
-
-        // this.vpc = new ec2.Vpc(this, props.name, {
-        //     cidr: config.vpc.cidr,
-        //     maxAzs: props.maxAzs,
-        //     subnetConfiguration: [
-        //         this.privateSubnetConfiguration,
-        //         this.publicSubnetConfiguration
-        //     ],
-        //     natGateways: config.vpc.natGateways
-        // });
-
-        // // create cfn output vpc id
-        // new cdk.CfnOutput(this, 'VpcIdOutput', {
-        //     description: 'CDK Vpc Id',
-        //     value: this.vpc.vpcId,
-        //     exportName: 'VpcIdOutput'
-        // });
-
-        // // create cfn output isolated subnets
-        // this.vpc.isolatedSubnets.forEach((subnet, index) =>
-        //     new cdk.CfnOutput(this, `IsolatedSubnet${++index}Output`, {
-        //         description: `CDK Isolated Subnet${index} Id`,
-        //         value: subnet.subnetId
-        //     })
-        // );
-
-        // // create cfn output public subnets
-        // this.vpc.isolatedSubnets.forEach((subnet, index) =>
-        //     new cdk.CfnOutput(this, `PublicSubnet${++index}Output`, {
-        //         description: `CDK Public Subnet${index} Id`,
-        //         value: subnet.subnetId
-        //     })
-        // );
     }
 }
