@@ -4,7 +4,7 @@ import * as rds from '@aws-cdk/aws-rds';
 import * as logs from '@aws-cdk/aws-logs';
 import * as kms from '@aws-cdk/aws-kms';
 import { Tag, CfnOutput } from '@aws-cdk/core';
-import { Vpc, InstanceType, SubnetType } from '@aws-cdk/aws-ec2'
+import { Vpc, IVpc, InstanceType, SubnetType } from '@aws-cdk/aws-ec2'
 import { RemovalPolicy } from '@aws-cdk/core';
 import { SecretsStack } from './cdk-secrets';
 import { ParameterGroupStack } from './cdk-parameter-group';
@@ -12,7 +12,8 @@ import { ReadReplicaStack } from './cdk-read-replica';
 import { kmsKeys, kmsArnSuffix } from '../bin/cdk-config';
 
 export interface RdsProps {
-    vpc: Vpc;
+    vpc: IVpc;
+    // vpc: Vpc;
     databaseName: string;
     secretName: string;
 }
@@ -78,7 +79,7 @@ export class RdsStack extends cdk.Construct {
         this.db.connections.allowDefaultPortFromAnyIpv4();
 
         // create cfn output db end point address
-        new CfnOutput(this, 'DbInstanceEndPoint', {
+        new cdk.CfnOutput(this, 'DbInstanceEndPoint', {
             description: 'CDK RDS Endpoint Address',
             value: this.db.dbInstanceEndpointAddress,
             exportName: 'DbInstanceEndPoint'

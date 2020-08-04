@@ -9,12 +9,16 @@ export interface VpcProps {
 }
 
 export class VpcStack extends cdk.Construct {
-    public readonly vpc: ec2.Vpc;
+    public readonly vpc: ec2.IVpc;
+    // public readonly vpc: ec2.Vpc;
     public readonly privateSubnetConfiguration: ec2.SubnetConfiguration;
     public readonly publicSubnetConfiguration: ec2.SubnetConfiguration;
 
     constructor(scope: cdk.Construct, id: string, props: VpcProps, config: Config) {
         super(scope, id);
+
+        // cmdline arg vpcid
+        const vpcId: string | undefined = this.node.tryGetContext('vpcid');
 
         // create vpc resource
         this.privateSubnetConfiguration = {
@@ -29,37 +33,81 @@ export class VpcStack extends cdk.Construct {
             subnetType: ec2.SubnetType.PUBLIC,
         };
 
-        this.vpc = new ec2.Vpc(this, props.name, {
-            cidr: config.vpc.cidr,
-            maxAzs: props.maxAzs,
-            subnetConfiguration: [
-                this.privateSubnetConfiguration,
-                this.publicSubnetConfiguration
-            ],
-            natGateways: config.vpc.natGateways
-        });
+        // create vpc or use existing vpc
+        if (!vpcId) {
+            console.log("create new vpc");
 
-        // create cfn output vpc id
-        new cdk.CfnOutput(this, 'VpcIdOutput', {
-            description: 'CDK Vpc Id',
-            value: this.vpc.vpcId,
-            exportName: 'VpcIdOutput'
-        });
+            this.vpc = new ec2.Vpc(this, props.name, {
+                cidr: config.vpc.cidr,
+                maxAzs: props.maxAzs,
+                subnetConfiguration: [
+                    this.privateSubnetConfiguration,
+                    this.publicSubnetConfiguration
+                ],
+                natGateways: config.vpc.natGateways
+            });
 
-        // create cfn output isolated subnets
-        this.vpc.isolatedSubnets.forEach((subnet, index) =>
-            new cdk.CfnOutput(this, `IsolatedSubnet${++index}Output`, {
-                description: `CDK Isolated Subnet${index} Id`,
-                value: subnet.subnetId
-            })
-        );
+            // create cfn output vpc id
+            new cdk.CfnOutput(this, 'VpcIdOutput', {
+                description: 'CDK Vpc Id',
+                value: this.vpc.vpcId,
+                exportName: 'VpcIdOutput'
+            });
 
-        // create cfn output public subnets
-        this.vpc.isolatedSubnets.forEach((subnet, index) =>
-            new cdk.CfnOutput(this, `PublicSubnet${++index}Output`, {
-                description: `CDK Public Subnet${index} Id`,
-                value: subnet.subnetId
-            })
-        );
+            // create cfn output isolated subnets
+            this.vpc.isolatedSubnets.forEach((subnet, index) =>
+                new cdk.CfnOutput(this, `IsolatedSubnet${++index}Output`, {
+                    description: `CDK Isolated Subnet${index} Id`,
+                    value: subnet.subnetId
+                })
+            );
+
+            // create cfn output public subnets
+            this.vpc.isolatedSubnets.forEach((subnet, index) =>
+                new cdk.CfnOutput(this, `PublicSubnet${++index}Output`, {
+                    description: `CDK Public Subnet${index} Id`,
+                    value: subnet.subnetId
+                })
+            );
+        } else {
+            console.log("use existing vpcId");
+
+            this.vpc = ec2.Vpc.fromLookup(this, 'VPC', {
+                vpcId: vpcId
+            });
+        }
+
+        // this.vpc = new ec2.Vpc(this, props.name, {
+        //     cidr: config.vpc.cidr,
+        //     maxAzs: props.maxAzs,
+        //     subnetConfiguration: [
+        //         this.privateSubnetConfiguration,
+        //         this.publicSubnetConfiguration
+        //     ],
+        //     natGateways: config.vpc.natGateways
+        // });
+
+        // // create cfn output vpc id
+        // new cdk.CfnOutput(this, 'VpcIdOutput', {
+        //     description: 'CDK Vpc Id',
+        //     value: this.vpc.vpcId,
+        //     exportName: 'VpcIdOutput'
+        // });
+
+        // // create cfn output isolated subnets
+        // this.vpc.isolatedSubnets.forEach((subnet, index) =>
+        //     new cdk.CfnOutput(this, `IsolatedSubnet${++index}Output`, {
+        //         description: `CDK Isolated Subnet${index} Id`,
+        //         value: subnet.subnetId
+        //     })
+        // );
+
+        // // create cfn output public subnets
+        // this.vpc.isolatedSubnets.forEach((subnet, index) =>
+        //     new cdk.CfnOutput(this, `PublicSubnet${++index}Output`, {
+        //         description: `CDK Public Subnet${index} Id`,
+        //         value: subnet.subnetId
+        //     })
+        // );
     }
 }

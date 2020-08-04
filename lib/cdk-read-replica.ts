@@ -2,11 +2,12 @@ import * as cdk from '@aws-cdk/core';
 import { Config } from '../bin/config';
 import * as rds from '@aws-cdk/aws-rds';
 import { Tag, CfnOutput } from '@aws-cdk/core';
-import { Vpc, InstanceType, SubnetType } from '@aws-cdk/aws-ec2'
+import { Vpc, IVpc, InstanceType, SubnetType } from '@aws-cdk/aws-ec2'
 import { RemovalPolicy } from '@aws-cdk/core';
 
 export interface ReadReplicaProps {
-    vpc: Vpc;
+    // vpc: Vpc;
+    vpc: IVpc,
     db: rds.DatabaseInstance;
 }
 

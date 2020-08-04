@@ -21,6 +21,7 @@ export class CdkRdsStack extends cdk.Stack {
         const vpcStackEntity = new VpcStack(this, 'Vpc', vpcProps, config);
 
         const rdsProps = {
+            // vpc: vpcStackEntity.vpc,
             vpc: vpcStackEntity.vpc,
             databaseName: 'demo',
             secretName: `db/${env}/password`

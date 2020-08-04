@@ -3,11 +3,10 @@ import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
 // import { CdkRdsPostgresStack } from '../lib/cdk-rds-postgres-stack';
 import { CdkRdsStack } from '../lib/cdk-rds-stack';
+import { CdkVpcStack } from '../lib/cdk-vpc-stack';
 import { Tag } from '@aws-cdk/core';
 import { stackTags } from './cdk-config';
-import { getConfig, getConfigContext } from './config';
-import { exit } from 'process';
-
+import { getConfig } from './config';
 
 const app = new cdk.App();
 
@@ -25,6 +24,14 @@ if (process.env.CDK_DEPLOY_REGION === undefined) {
 }
 
 const config = getConfig();
+// const stack = new CdkVpcStack(app, 'CdkVpcPostgresStack', {
+//     env: {
+//         account: app.node.tryGetContext('account') || process.env.CDK_DEPLOY_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+//         region: app.node.tryGetContext('region') || process.env.CDK_DEPLOY_REGION || process.env.CDK_DEFAULT_REGION
+//     },
+//     description: "CDK Vpc Postgres Stack"
+// }, config);
+
 const stack = new CdkRdsStack(app, 'CdkRdsPostgresStack', {
     env: {
         account: app.node.tryGetContext('account') || process.env.CDK_DEPLOY_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
