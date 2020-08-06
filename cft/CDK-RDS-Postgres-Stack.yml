@@ -24,6 +24,16 @@ Resources:
           Value: John Macis
     Metadata:
       aws:cdk:path: CdkRdsPostgresStack/Rds/DbSecret/Secrets/Resource
+  RdsDbSecretSecretsAttachedSecret211AAC9A:
+    Type: AWS::SecretsManager::SecretTargetAttachment
+    Properties:
+      SecretId:
+        Ref: RdsDbSecretSecrets6F036D51
+      TargetId:
+        Ref: RdsRdsInstance295A7CFA
+      TargetType: AWS::RDS::DBInstance
+    Metadata:
+      aws:cdk:path: CdkRdsPostgresStack/Rds/DbSecret/Secrets/AttachedSecret/Resource
   RdsParameterGroupC6FE513C:
     Type: AWS::RDS::DBParameterGroup
     Properties:
@@ -63,8 +73,8 @@ Resources:
     Properties:
       DBSubnetGroupDescription: Subnet group for RdsInstance database
       SubnetIds:
-        - subnet-0963f01ebd2a61ee5
-        - subnet-00f9dbdb1bdb95141
+        - subnet-0a4be6c18e37fd8c6
+        - subnet-07ed7b2ef59f407c9
       Tags:
         - Key: AppName
           Value: test-rds-postgres-db
@@ -101,7 +111,7 @@ Resources:
           Value: CDK-RDS-POSTGRES-DB
         - Key: StackOwner
           Value: John Macis
-      VpcId: vpc-02646997cb1a175ea
+      VpcId: vpc-07d35dc031de6743c
     Metadata:
       aws:cdk:path: CdkRdsPostgresStack/Rds/RdsInstance/SecurityGroup/Resource
   RdsRdsInstanceSecurityGroupfrom00000IndirectPortEEA8736B:
