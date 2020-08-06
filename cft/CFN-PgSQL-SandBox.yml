@@ -1,0 +1,134 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  AWS CloudFormation Template For RDS_PostgreSQLSQL_With_Read_Replica:Create a
+  highly-available, RDS DBInstance with a read replica and Amazon CloudWatch
+  alarms.CreateBy : Nate Taylor CreateDate:06 July 2020 
+  This template has been validated and run in the SandBox without errors
+Parameters:
+  Project:
+    Description: Enter your project name
+    Type: String
+    Default: dcps
+  Purpose:
+    Description: >-
+      Enter the purpose of the network load balancer for naming convention
+      (aci-pg-[project]-[purpose]-[environment])
+    Type: String
+  EnvironmentName:
+    Description: An environment name that will be prefixed to resource names
+    Type: String
+    Default: dev
+  DBName:
+    Default: dcpsdevdb
+    Description: The database name
+    Type: String
+    MinLength: '1'
+    MaxLength: '64'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+  DBUser:
+    NoEcho: 'true'
+    Description: The database admin account username
+    Type: String
+    Default: cicdacct
+    MinLength: '1'
+    MaxLength: '16'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+  DBPassword:
+    NoEcho: 'true'
+    Description: The database admin account password
+    Type: String
+    Default: 4youAgain
+    MinLength: '1'
+    MaxLength: '41'
+    AllowedPattern: '[a-zA-Z0-9]+'
+    ConstraintDescription: must contain only alphanumeric characters.
+  DBAllocatedStorage:
+    Default: '100'
+    Description: The size of the database (Gb)
+    Type: Number
+    MinValue: '5'
+    MaxValue: '90024'
+    ConstraintDescription: must be between 5 and 1024Gb.
+  DBInstanceClass:
+    Description: The database instance type
+    Type: String
+    Default: db.m4.xlarge
+    AllowedValues:
+        - db.m4.xlarge
+    ConstraintDescription: must select a valid database instance type.
+  MultiAZ:
+    Description: Multi-AZ master database
+    Type: String
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+    ConstraintDescription: must be true or false.
+  DBEngineVersion:
+    Description: Select Database Engine Version
+    Type: String
+    Default: 12.3
+    AllowedValues:
+      - 12.3
+      - 11.7
+Mappings:
+  DBFamilyMap:
+    '12.3':
+      family: postgres12
+    '11.7':
+      family: aurora-postgresql11
+Resources:
+  PostgreSQLParamGroup:
+    Type: 'AWS::RDS::DBParameterGroup'
+    Properties:
+      Description: CloudFormation AWS RDS PostgreSQL Database Parameter Group
+      Family: !FindInMap 
+        - DBFamilyMap
+        - !Ref DBEngineVersion
+        - family
+      Parameters:
+        shared_preload_libraries: 'auto_explain,pg_stat_statements,pg_hint_plan,pgaudit'
+        log_statement: ddl
+        log_connections: 1
+        log_disconnections: 1
+        log_lock_waits: 1
+        log_min_duration_statement: 5000
+        auto_explain.log_min_duration: 5000
+        auto_explain.log_verbose: 1
+        log_rotation_age: 1440
+        log_rotation_size: 102400
+        rds.log_retention_period: 10080
+        random_page_cost: 1
+        track_activity_query_size: 16384
+        idle_in_transaction_session_timeout: 7200000
+        statement_timeout: 7200000
+        search_path: '""""$user"""",public'
+  MasterDB:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBName: !Ref DBName
+      AllocatedStorage: !Ref DBAllocatedStorage
+      DBInstanceClass: !Ref DBInstanceClass
+      DBInstanceIdentifier: aci-pg-dcps-maxd-inst00
+      Engine: postgres
+      EngineVersion: '12.3'
+      MasterUsername: !Ref DBUser
+      MasterUserPassword: !Ref DBPassword
+      DBParameterGroupName: !Ref PostgreSQLParamGroup
+      DBSubnetGroupName: 'aci-sg-dcps-dev-rds-x'
+      MultiAZ: !Ref MultiAZ
+      Tags:
+        - Key: Name
+          Value: Master Database
+    DeletionPolicy: Snapshot
+  ReplicaDB:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      SourceDBInstanceIdentifier: !Ref MasterDB
+      DBInstanceClass: !Ref DBInstanceClass
+      DBInstanceIdentifier: aci-pg-dcps-maxd-ro-inst00
+      Tags:
+        - Key: Name
+          Value: Read Replica Database
