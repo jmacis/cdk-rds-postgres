@@ -10,6 +10,7 @@ import { SecretsStack } from './cdk-secrets';
 import { ParameterGroupStack } from './cdk-parameter-group';
 import { ReadReplicaStack } from './cdk-read-replica';
 import { kmsKeys, kmsArnSuffix } from '../bin/cdk-config';
+import * as secretsManager from '@aws-cdk/aws-secretsmanager';
 
 export interface RdsProps {
     vpc: IVpc;
@@ -29,6 +30,10 @@ export class RdsStack extends cdk.Construct {
 
         // create secrets manager resource
         this.dbSecret = new SecretsStack(this, 'DbSecret', props, config);
+
+        // const secret = new rds.DatabaseSecret(this, "MasterUserSecret", {
+        //     username: config.database.masterUsername
+        // });
 
         // create rds parameter group resource
         this.dbParameterGroup = new ParameterGroupStack(this, 'ParameterGroup', props, config);
@@ -51,6 +56,8 @@ export class RdsStack extends cdk.Construct {
             // masterUsername: config.database.masterUsername,
             masterUsername: this.dbSecret.secret.secretValueFromJson('username').toString(),
             masterUserPassword: this.dbSecret.secret.secretValueFromJson(config.secretsManager.generateStringKey),
+            // masterUsername: secret.secretValueFromJson('username').toString(),
+            // masterUserPassword: secret.secretValueFromJson(config.secretsManager.generateStringKey),
             databaseName: props.databaseName,
             instanceType: new InstanceType(config.database.instanceType),
             // instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
@@ -72,6 +79,32 @@ export class RdsStack extends cdk.Construct {
             // storageEncryptionKey: dbKmsKey
         });
 
+        // create secrets attachment target
+        const target: secretsManager.ISecretAttachmentTarget = {
+            asSecretAttachmentTarget: () => ({
+                targetId: this.db.instanceIdentifier,
+                targetType: secretsManager.AttachmentTargetType.INSTANCE
+            })
+        };
+
+        // add target attachment to secret
+        this.dbSecret.secret.addTargetAttachment('AttachedSecret', {
+            target: target
+        });
+
+        // // create secrets attachment target
+        // const target: secretsManager.ISecretAttachmentTarget = {
+        //     asSecretAttachmentTarget: () => ({
+        //         targetId: this.db.instanceIdentifier,
+        //         targetType: secretsManager.AttachmentTargetType.INSTANCE
+        //     })
+        // };
+
+        // // add target attachment to secret
+        // secret.addTargetAttachment('AttachedSecret', {
+        //     target: target
+        // });
+
         // add tags to db master
         Tag.add(this.db, 'Name', 'Master Database');
 
@@ -83,6 +116,12 @@ export class RdsStack extends cdk.Construct {
             description: 'CDK RDS Endpoint Address',
             value: this.db.dbInstanceEndpointAddress,
             exportName: 'DbInstanceEndPoint'
+        });
+
+        // create cfn output db end point address
+        new cdk.CfnOutput(this, 'DbInstanceIdentifier', {
+            description: 'CDK RDS Instance Identifier',
+            value: `${config.awsConsole}/rds/home?region=${this.db.stack.region}#database:id=${this.db.instanceIdentifier};is-cluster=false`
         });
 
         const readReplicaProps = {

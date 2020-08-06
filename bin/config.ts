@@ -55,6 +55,7 @@ export interface SecretsManagerConfig {
 
 export interface Config {
     host: string;
+    awsConsole: string;
     vpc: VpcConfig;
     webInstance: InstanceConfig;
     database: DatabaseConfig;
@@ -72,6 +73,7 @@ function assert(value: any): any {
 export function getConfig(): Config {
     return {
         host: assert(process.env.HOST),
+        awsConsole: assert(process.env.AWS_CONSOLE),
         vpc: {
             cidr: assert(process.env.VPC_CIDR),
             subnetPublicName: assert(process.env.VPC_SUBNET_PUBLIC_NAME),

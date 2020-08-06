@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Config } from '../bin/config';
 import * as ec2 from '@aws-cdk/aws-ec2';
-// import { Vpc, InstanceType, SecurityGroup, ISubnet } from "@aws-cdk/aws-ec2";
+// import { Vpc, SubnetType, SecurityGroup, ISubnet } from "@aws-cdk/aws-ec2";
 
 export interface VpcProps {
     name: string;
@@ -10,7 +10,6 @@ export interface VpcProps {
 
 export class VpcStack extends cdk.Construct {
     public readonly vpc: ec2.IVpc;
-    // public readonly vpc: ec2.Vpc;
     public readonly privateSubnetConfiguration: ec2.SubnetConfiguration;
     public readonly publicSubnetConfiguration: ec2.SubnetConfiguration;
 
@@ -36,7 +35,6 @@ export class VpcStack extends cdk.Construct {
         // create vpc or use existing vpc
         if (!vpcId) {
             console.log("create new vpc");
-
             this.vpc = new ec2.Vpc(this, props.name, {
                 cidr: config.vpc.cidr,
                 maxAzs: props.maxAzs,
@@ -50,7 +48,7 @@ export class VpcStack extends cdk.Construct {
             // create cfn output vpc id
             new cdk.CfnOutput(this, 'VpcIdOutput', {
                 description: 'CDK Vpc Id',
-                value: this.vpc.vpcId,
+                value: `${config.awsConsole}/vpc/home?region=${this.vpc.stack.region}#vpcs:search=${this.vpc.vpcId}`,
                 exportName: 'VpcIdOutput'
             });
 
@@ -58,7 +56,7 @@ export class VpcStack extends cdk.Construct {
             this.vpc.isolatedSubnets.forEach((subnet, index) =>
                 new cdk.CfnOutput(this, `IsolatedSubnet${++index}Output`, {
                     description: `CDK Isolated Subnet${index} Id`,
-                    value: subnet.subnetId
+                    value: `${config.awsConsole}/vpc/home?region=${this.vpc.stack.region}#subnets:filter=${subnet.subnetId}`
                 })
             );
 
@@ -66,13 +64,12 @@ export class VpcStack extends cdk.Construct {
             this.vpc.isolatedSubnets.forEach((subnet, index) =>
                 new cdk.CfnOutput(this, `PublicSubnet${++index}Output`, {
                     description: `CDK Public Subnet${index} Id`,
-                    value: subnet.subnetId
+                    value: `${config.awsConsole}/vpc/home?region=${this.vpc.stack.region}#subnets:filter=${subnet.subnetId}`
                 })
             );
         } else {
             console.log("use existing vpcId");
-
-            this.vpc = ec2.Vpc.fromLookup(this, 'VPC', {
+            this.vpc = ec2.Vpc.fromLookup(this, props.name, {
                 vpcId: vpcId
             });
         }

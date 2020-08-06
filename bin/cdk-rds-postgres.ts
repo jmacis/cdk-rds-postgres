@@ -40,13 +40,5 @@ const stack = new CdkRdsStack(app, 'CdkRdsPostgresStack', {
     description: "CDK RDS Postgres Stack"
 }, config);
 
-// const stack = new CdkRdsPostgresStack(app, 'CdkRdsPostgresStack', {
-//     env: {
-//         account: process.env.CDK_DEPLOY_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-//         region: process.env.CDK_DEPLOY_REGION || process.env.CDK_DEFAULT_REGION
-//     },
-//     description: "CDK RDS Postgres Stack"
-// });
-
 // apply tags to stack
 stackTags[`${env}`].forEach(tag => Tag.add(stack, tag.name, tag.value));

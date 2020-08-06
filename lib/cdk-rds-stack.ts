@@ -3,6 +3,7 @@ import { Config } from '../bin/config';
 import { VpcStack } from './cdk-vpc';
 import { RdsStack } from './cdk-rds';
 import { CloudWatchStack } from './cdk-sns-cloudwatch';
+import { AlbStack } from './cdk-alb';
 
 export class CdkRdsStack extends cdk.Stack {
 
@@ -13,7 +14,7 @@ export class CdkRdsStack extends cdk.Stack {
         const env = scope.node.tryGetContext('env');
 
         const vpcProps = {
-            name: `Vpc-${env}`,
+            name: `Vpc`,
             maxAzs: 2
         };
 
@@ -37,5 +38,12 @@ export class CdkRdsStack extends cdk.Stack {
 
         // create sns cloudwatch resource
         const snsStackEntity = new CloudWatchStack(this, 'SnsCloudWatch', snsCloudWatchProps, config);
+
+        // const albProps = {
+        //     vpc: vpcStackEntity.vpc
+        // };
+
+        // // create application load balancer resource
+        // const albStackEntity = new AlbStack(this, 'Alb', albProps, config);
     }
 }
