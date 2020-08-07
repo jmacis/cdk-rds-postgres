@@ -1,9 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import { Config } from '../bin/config';
 import * as rds from '@aws-cdk/aws-rds';
-import * as logs from '@aws-cdk/aws-logs';
 import * as kms from '@aws-cdk/aws-kms';
-import { Tag, CfnOutput } from '@aws-cdk/core';
+import { Tag } from '@aws-cdk/core';
 import { Vpc, IVpc, InstanceType, SubnetType } from '@aws-cdk/aws-ec2'
 import { RemovalPolicy } from '@aws-cdk/core';
 import { SecretsStack } from './cdk-secrets';
@@ -11,6 +10,7 @@ import { ParameterGroupStack } from './cdk-parameter-group';
 import { ReadReplicaStack } from './cdk-read-replica';
 import { kmsKeys, kmsArnSuffix } from '../bin/cdk-config';
 import * as secretsManager from '@aws-cdk/aws-secretsmanager';
+import * as lambda from '@aws-cdk/aws-lambda';
 
 export interface RdsProps {
     vpc: IVpc;
@@ -24,7 +24,7 @@ export class RdsStack extends cdk.Construct {
     public readonly dbParameterGroup: ParameterGroupStack;
     public readonly replica: rds.DatabaseInstanceReadReplica;
     public readonly dbSecret: SecretsStack;
-
+    public readonly ['arn:aws:lambda:us-east-1:009963118558:function:MyLambdaRotationFunction']: lambda.IFunction;
     constructor(scope: cdk.Construct, id: string, props: RdsProps, config: Config) {
         super(scope, id);
 
@@ -84,6 +84,16 @@ export class RdsStack extends cdk.Construct {
         // add target attachment to secret
         this.dbSecret.secret.addTargetAttachment('AttachedSecret', {
             target: target
+        });
+
+        // get rotate lambda function arn
+        const func = lambda.Function.fromFunctionArn(this, 'MyLambdaRotationFunction', `arn:aws:lambda:${this.dbSecret.secret.stack.region}:${this.dbSecret.secret.stack.account}:function:MyLambdaRotationFunction`)
+        // console.log(func);
+
+        // add secrets manager rotation schedule
+        this.dbSecret.secret.addRotationSchedule('RotateSecrets', {
+            rotationLambda: func,
+            automaticallyAfter: cdk.Duration.days(2),
         });
 
         // add tags to db master

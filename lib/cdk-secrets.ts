@@ -8,7 +8,6 @@ export interface SecretsProps {
 
 export class SecretsStack extends cdk.Construct {
     public readonly secret: secretsManager.Secret;
-
     constructor(scope: cdk.Construct, id: string, props: SecretsProps, config: Config) {
         super(scope, id);
 
@@ -23,6 +22,13 @@ export class SecretsStack extends cdk.Construct {
                 secretStringTemplate: JSON.stringify({ username: config.database.masterUsername })
             }
         });
+
+        // create cfn output secrets arn
+        new cdk.CfnOutput(this, 'SecretsManagerArn', {
+            description: 'CDK RDS Secrets Manager Arn',
+            value: this.secret.secretArn
+        });
+
         //console.log('secretValueFromJson:', cdk.Token.asString(this.secret.secretValueFromJson('password')));
         // console.log('secretArn:', this.secret.secretArn);
     }
