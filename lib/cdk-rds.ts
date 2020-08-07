@@ -24,7 +24,6 @@ export class RdsStack extends cdk.Construct {
     public readonly dbParameterGroup: ParameterGroupStack;
     public readonly replica: rds.DatabaseInstanceReadReplica;
     public readonly dbSecret: SecretsStack;
-    public readonly ['arn:aws:lambda:us-east-1:009963118558:function:MyLambdaRotationFunction']: lambda.IFunction;
     constructor(scope: cdk.Construct, id: string, props: RdsProps, config: Config) {
         super(scope, id);
 
