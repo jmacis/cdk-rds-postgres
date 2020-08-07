@@ -86,8 +86,8 @@ export class RdsStack extends cdk.Construct {
         });
 
         // get rotate lambda function arn
-        const func = lambda.Function.fromFunctionArn(this, 'MyLambdaRotationFunction', `arn:aws:lambda:${this.dbSecret.secret.stack.region}:${this.dbSecret.secret.stack.account}:function:MyLambdaRotationFunction`)
-        // console.log(func);
+        const func = lambda.Function.fromFunctionArn(this, 'MyLambdaRotationFunction',
+            `arn:aws:lambda:${this.dbSecret.secret.stack.region}:${this.dbSecret.secret.stack.account}:function:MyLambdaRotationFunction`);
 
         // add secrets manager rotation schedule
         this.dbSecret.secret.addRotationSchedule('RotateSecrets', {
