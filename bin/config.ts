@@ -36,6 +36,7 @@ export interface DatabaseConfig {
     deletionProtection: boolean;
     engineVersion: PostgresEngineVersion;
     cloudwatchLogsRetention: RetentionDays;
+    securityGroupId: string;
 }
 
 export interface CloudwatchConfig {
@@ -51,6 +52,7 @@ export interface SecretsManagerConfig {
     passwordLength: number;
     excludePunctuation: boolean;
     generateStringKey: string;
+    scheduleRotateDays: number;
 }
 
 export interface Config {
@@ -102,6 +104,7 @@ export function getConfig(): Config {
             deletionProtection: assert(process.env.DATABASE_DELETION_PROTECTION) === "true",
             engineVersion: assert(configProps[`${env}`][`${region}`][`${account}`].engineVersion),
             cloudwatchLogsRetention: assert(configProps[`${env}`][`${region}`][`${account}`].cloudwatchLogsRetention),
+            securityGroupId: assert(configProps[`${env}`][`${region}`][`${account}`].dbSecurityGroupId),
         },
         cloudwatchAlarms: {
             cpuUtilzThreshold: Number(assert(process.env.CLOUDWATCH_ALARM_CPU_UTILZ_THRESHOLD)),
@@ -115,6 +118,7 @@ export function getConfig(): Config {
             passwordLength: Number(assert(process.env.SECRETMANAGER_PASSWORD_LENGTH)),
             excludePunctuation: assert(process.env.SECRETMANAGER_EXCLUDE_PUNCTUATION) === "true",
             generateStringKey: assert(process.env.SECRETMANAGER_GENERATE_STRING_KEY),
+            scheduleRotateDays: Number(assert(process.env.SECRETMANAGER_SCHEDULE_ROTATE_DAYS)),
         }
     };
 }
@@ -128,20 +132,24 @@ export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: 
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            dbSecurityGroupId: 'sg-055138550b8535c2b',
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            dbSecurityGroupId: undefined,
         }
     },
     'us-west-2': {
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            dbSecurityGroupId: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            dbSecurityGroupId: undefined,
         }
     }
 };
@@ -151,20 +159,24 @@ export const configPropsStag: { [key: string]: { [key: string]: { [key: string]:
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            dbSecurityGroupId: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            dbSecurityGroupId: undefined,
         }
     },
     'us-west-2': {
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            dbSecurityGroupId: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
+            dbSecurityGroupId: undefined,
         }
     }
 };
@@ -174,24 +186,24 @@ export const configPropsProd: { [key: string]: { [key: string]: { [key: string]:
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
-            fooBar: '',
+            dbSecurityGroupId: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
-            fooBar: '',
+            dbSecurityGroupId: undefined,
         }
     },
     'us-west-2': {
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
-            fooBar: '',
+            dbSecurityGroupId: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
-            fooBar: '',
+            dbSecurityGroupId: undefined,
         }
     }
 };

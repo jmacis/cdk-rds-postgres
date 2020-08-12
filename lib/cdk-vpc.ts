@@ -61,7 +61,7 @@ export class VpcStack extends cdk.Construct {
             );
 
             // create cfn output public subnets
-            this.vpc.isolatedSubnets.forEach((subnet, index) =>
+            this.vpc.publicSubnets.forEach((subnet, index) =>
                 new cdk.CfnOutput(this, `PublicSubnet${++index}Output`, {
                     description: `CDK Public Subnet${index} Id`,
                     value: `${config.awsConsole}/vpc/home?region=${this.vpc.stack.region}#subnets:filter=${subnet.subnetId}`
@@ -73,5 +73,19 @@ export class VpcStack extends cdk.Construct {
                 vpcId: vpcId
             });
         }
+
+        // // create public security group resource
+        // const publicSecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+        //     vpc: this.vpc,
+        //     allowAllOutbound: true,
+        //     description: 'Security Group for RdsInstance database',
+        //     // securityGroupName: 'cdk-vpc-rds-masterdatabase',
+        // });
+
+        // // create ingress rule port 5432
+        // publicSecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(5432), 'from 0.0.0.0/0:{IndirectPort}');
+
+        // // create ingress rule lambda port 443
+        // publicSecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'from 0.0.0.0/0:443');
     }
 }

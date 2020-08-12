@@ -3,7 +3,7 @@ import { Config } from '../bin/config';
 import * as rds from '@aws-cdk/aws-rds';
 import * as kms from '@aws-cdk/aws-kms';
 import { Tag } from '@aws-cdk/core';
-import { Vpc, IVpc, InstanceType, SubnetType } from '@aws-cdk/aws-ec2'
+import { Vpc, IVpc, InstanceType, SubnetType, Port, SecurityGroup } from '@aws-cdk/aws-ec2';
 import { RemovalPolicy } from '@aws-cdk/core';
 import { SecretsStack } from './cdk-secrets';
 import { ParameterGroupStack } from './cdk-parameter-group';
@@ -42,6 +42,11 @@ export class RdsStack extends cdk.Construct {
         const dbKmsArn = kmsKeys[`${process.env.NODE_ENV}`][`${process.env.CDK_DEPLOY_REGION}`][`${process.env.CDK_DEPLOY_ACCOUNT}`];
         const dbKmsKey = (config.database.storageEncrypted === true) ? kms.Key.fromKeyArn(this, 'KmsKey', dbKmsArn) : undefined;
 
+        // create db security group resource
+        const dbSecurityGroup = SecurityGroup.fromSecurityGroupId(this, 'SG', config.database.securityGroupId, {
+            mutable: true
+        });
+
         // create rds resource
         this.db = new rds.DatabaseInstance(this, 'RdsInstance', {
             instanceIdentifier: 'cdk-rds-postgres',
@@ -58,6 +63,7 @@ export class RdsStack extends cdk.Construct {
             multiAz: config.database.multiAz,
             parameterGroup: this.dbParameterGroup.parameterGroup,
             vpcPlacement: { subnetType: SubnetType.PUBLIC },
+            securityGroups: [dbSecurityGroup],
             preferredBackupWindow: config.database.preferredBackupWindow,
             preferredMaintenanceWindow: config.database.preferredMaintenanceWindow,
             backupRetention: cdk.Duration.days(config.database.backupRetention),
@@ -86,18 +92,23 @@ export class RdsStack extends cdk.Construct {
         });
 
         // get rotate lambda function arn
-        const func = lambda.Function.fromFunctionArn(this, 'MyLambdaRotationFunction',
-            `arn:aws:lambda:${this.dbSecret.secret.stack.region}:${this.dbSecret.secret.stack.account}:function:MyLambdaRotationFunction`);
+        const func = lambda.Function.fromFunctionArn(this, 'MyLambdaRotationFunctionTest',
+            `arn:aws:lambda:${this.dbSecret.secret.stack.region}:${this.dbSecret.secret.stack.account}:function:MyLambdaRotationFunctionTest`);
 
         // add secrets manager rotation schedule
         this.dbSecret.secret.addRotationSchedule('RotateSecrets', {
             rotationLambda: func,
-            automaticallyAfter: cdk.Duration.days(2),
+            automaticallyAfter: cdk.Duration.days(config.secretsManager.scheduleRotateDays),
         });
+
+        // @TODO moved to vpc
+        // create ingress rule lambda port 443
+        // this.db.connections.allowFromAnyIpv4(Port.tcp(443));
 
         // add tags to db master
         Tag.add(this.db, 'Name', 'Master Database');
 
+        // @TODO moved to vpc
         // create ingress rule port 5432
         this.db.connections.allowDefaultPortFromAnyIpv4();
 
