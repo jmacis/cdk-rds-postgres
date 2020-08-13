@@ -25,7 +25,7 @@ cdk deploy -c env=development --profile my-profile <br />
 cdk destroy -c env=development --profile my-profile <br />
 
 ## Create Resources
-1 Secret Manager <br />
+1 Secrets Manager <br />
 1 SNS Topic <br />
 1 DB Parameter Group <br />
 1 DB Instance <br />
