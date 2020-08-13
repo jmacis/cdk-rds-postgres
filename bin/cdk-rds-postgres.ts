@@ -10,9 +10,14 @@ import { getConfig } from './config';
 
 const app = new cdk.App();
 
-const env = app.node.tryGetContext('env') || process.env.NODE_ENV || 'development';
-if (env === undefined) {
+const env: string | undefined = app.node.tryGetContext('env') || process.env.NODE_ENV || 'development';
+const vpcId: string | undefined = app.node.tryGetContext('vpcid');
+if (!env || env === undefined) {
     throw new Error('env must be passed in command argument');
+}
+
+if (!vpcId || vpcId === undefined) {
+    throw new Error('vpcid must be passed in command argument');
 }
 
 if (process.env.CDK_DEPLOY_ACCOUNT === undefined) {
@@ -24,14 +29,6 @@ if (process.env.CDK_DEPLOY_REGION === undefined) {
 }
 
 const config = getConfig();
-// const stack = new CdkVpcStack(app, 'CdkVpcPostgresStack', {
-//     env: {
-//         account: app.node.tryGetContext('account') || process.env.CDK_DEPLOY_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-//         region: app.node.tryGetContext('region') || process.env.CDK_DEPLOY_REGION || process.env.CDK_DEFAULT_REGION
-//     },
-//     description: "CDK Vpc Postgres Stack"
-// }, config);
-
 const stack = new CdkRdsStack(app, 'CdkRdsPostgresStack', {
     env: {
         account: app.node.tryGetContext('account') || process.env.CDK_DEPLOY_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
