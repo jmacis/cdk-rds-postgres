@@ -1,0 +1,453 @@
+Description: CDK VPC Stack
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  VpcStackVpc52EDDC7E:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.1.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: Name
+          Value: CdkVpcStack/VpcStack/Vpc
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/Resource
+  VpcStackVpcprivateSubnet1SubnetB9449155:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.1.0.0/26
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+      AvailabilityZone: us-east-1a
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: aws-cdk:subnet-name
+          Value: private
+        - Key: aws-cdk:subnet-type
+          Value: Isolated
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: Name
+          Value: CdkVpcStack/VpcStack/Vpc/privateSubnet1
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/privateSubnet1/Subnet
+  VpcStackVpcprivateSubnet1RouteTable940B1F59:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: Name
+          Value: CdkVpcStack/VpcStack/Vpc/privateSubnet1
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/privateSubnet1/RouteTable
+  VpcStackVpcprivateSubnet1RouteTableAssociationA337820C:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: VpcStackVpcprivateSubnet1RouteTable940B1F59
+      SubnetId:
+        Ref: VpcStackVpcprivateSubnet1SubnetB9449155
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/privateSubnet1/RouteTableAssociation
+  VpcStackVpcprivateSubnet2Subnet5C26BE19:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.1.0.64/26
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+      AvailabilityZone: us-east-1b
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: aws-cdk:subnet-name
+          Value: private
+        - Key: aws-cdk:subnet-type
+          Value: Isolated
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: Name
+          Value: CdkVpcStack/VpcStack/Vpc/privateSubnet2
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/privateSubnet2/Subnet
+  VpcStackVpcprivateSubnet2RouteTableAFE7D9B0:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: Name
+          Value: CdkVpcStack/VpcStack/Vpc/privateSubnet2
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/privateSubnet2/RouteTable
+  VpcStackVpcprivateSubnet2RouteTableAssociationAE1634B0:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: VpcStackVpcprivateSubnet2RouteTableAFE7D9B0
+      SubnetId:
+        Ref: VpcStackVpcprivateSubnet2Subnet5C26BE19
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/privateSubnet2/RouteTableAssociation
+  VpcStackVpcpublicSubnet1Subnet39D98FCF:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.1.0.128/26
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+      AvailabilityZone: us-east-1a
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: aws-cdk:subnet-name
+          Value: public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: Name
+          Value: CdkVpcStack/VpcStack/Vpc/publicSubnet1
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/publicSubnet1/Subnet
+  VpcStackVpcpublicSubnet1RouteTable0B8068D4:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: Name
+          Value: CdkVpcStack/VpcStack/Vpc/publicSubnet1
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/publicSubnet1/RouteTable
+  VpcStackVpcpublicSubnet1RouteTableAssociation56355B38:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: VpcStackVpcpublicSubnet1RouteTable0B8068D4
+      SubnetId:
+        Ref: VpcStackVpcpublicSubnet1Subnet39D98FCF
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/publicSubnet1/RouteTableAssociation
+  VpcStackVpcpublicSubnet1DefaultRouteFDB44FFC:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: VpcStackVpcpublicSubnet1RouteTable0B8068D4
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: VpcStackVpcIGW19641CFE
+    DependsOn:
+      - VpcStackVpcVPCGW2FE1D692
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/publicSubnet1/DefaultRoute
+  VpcStackVpcpublicSubnet2Subnet0A3B64E1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.1.0.192/26
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+      AvailabilityZone: us-east-1b
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: aws-cdk:subnet-name
+          Value: public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: Name
+          Value: CdkVpcStack/VpcStack/Vpc/publicSubnet2
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/publicSubnet2/Subnet
+  VpcStackVpcpublicSubnet2RouteTableDBF07C0E:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: Name
+          Value: CdkVpcStack/VpcStack/Vpc/publicSubnet2
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/publicSubnet2/RouteTable
+  VpcStackVpcpublicSubnet2RouteTableAssociationABA9C800:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: VpcStackVpcpublicSubnet2RouteTableDBF07C0E
+      SubnetId:
+        Ref: VpcStackVpcpublicSubnet2Subnet0A3B64E1
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/publicSubnet2/RouteTableAssociation
+  VpcStackVpcpublicSubnet2DefaultRoute13122467:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: VpcStackVpcpublicSubnet2RouteTableDBF07C0E
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: VpcStackVpcIGW19641CFE
+    DependsOn:
+      - VpcStackVpcVPCGW2FE1D692
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/publicSubnet2/DefaultRoute
+  VpcStackVpcIGW19641CFE:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: Name
+          Value: CdkVpcStack/VpcStack/Vpc
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/IGW
+  VpcStackVpcVPCGW2FE1D692:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+      InternetGatewayId:
+        Ref: VpcStackVpcIGW19641CFE
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/VPCGW
+  VpcStackVpcSecretsManagerVpcEndpoint0F467D94:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      ServiceName: com.amazonaws.us-east-1.secretsmanager
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - Fn::GetAtt:
+            - VpcStackRdsInstanceSecurityGroupF672BFBF
+            - GroupId
+      SubnetIds:
+        - Ref: VpcStackVpcpublicSubnet1Subnet39D98FCF
+        - Ref: VpcStackVpcpublicSubnet2Subnet0A3B64E1
+      VpcEndpointType: Interface
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Vpc/SecretsManagerVpcEndpoint/Resource
+  VpcStackRdsInstanceSecurityGroupF672BFBF:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for RdsInstance database
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp:
+            Fn::GetAtt:
+              - VpcStackVpc52EDDC7E
+              - CidrBlock
+          Description:
+            Fn::Join:
+              - ""
+              - - "from "
+                - Fn::GetAtt:
+                    - VpcStackVpc52EDDC7E
+                    - CidrBlock
+                - :443
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/RdsInstanceSecurityGroup/Resource
+  VpcStackReadReplicaSecurityGroup56D73AF1:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for ReadReplica database
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/ReadReplicaSecurityGroup/Resource
+  LambdaStackCfnApplicationA3F0AB56:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location:
+        ApplicationId: arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSPostgreSQLRotationSingleUser
+        SemanticVersion: 1.1.58
+      Parameters:
+        endpoint:
+          Fn::Join:
+            - ""
+            - - https://secretsmanager.
+              - Ref: AWS::Region
+              - .amazonaws.com
+        functionName: MyLambdaRotationFunction
+        vpcSubnetIds:
+          Fn::Join:
+            - ""
+            - - Ref: VpcStackVpcpublicSubnet1Subnet39D98FCF
+              - ","
+              - Ref: VpcStackVpcpublicSubnet2Subnet0A3B64E1
+        vpcSecurityGroupIds:
+          Fn::GetAtt:
+            - VpcStackRdsInstanceSecurityGroupF672BFBF
+            - GroupId
+      Tags:
+        AppName: test-vpc
+        CostCenter: "1000"
+        Env: Development
+        StackName: CDK-VPC
+        StackOwner: John Macis
+    Metadata:
+      aws:cdk:path: CdkVpcStack/LambdaStack/CfnApplication
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Modules: aws-cdk=1.56.0,@aws-cdk/aws-cloudwatch=1.56.0,@aws-cdk/aws-ec2=1.56.0,@aws-cdk/aws-events=1.56.0,@aws-cdk/aws-iam=1.56.0,@aws-cdk/aws-kms=1.56.0,@aws-cdk/aws-logs=1.56.0,@aws-cdk/aws-s3=1.56.0,@aws-cdk/aws-sam=1.56.0,@aws-cdk/aws-ssm=1.56.0,@aws-cdk/cloud-assembly-schema=1.56.0,@aws-cdk/core=1.56.0,@aws-cdk/cx-api=1.56.0,@aws-cdk/region-info=1.56.0,jsii-runtime=node.js/v12.13.1
+Outputs:
+  VpcStackVpcIdOutputADFD1EB4:
+    Description: CDK Vpc Id
+    Value:
+      Fn::Join:
+        - ""
+        - - https://console.aws.amazon.com/vpc/home?region=us-east-1#vpcs:search=
+          - Ref: VpcStackVpc52EDDC7E
+    Export:
+      Name: VpcIdOutput
+  VpcStackIsolatedSubnet1Output81A60C58:
+    Description: CDK Isolated Subnet1 Id
+    Value:
+      Fn::Join:
+        - ""
+        - - https://console.aws.amazon.com/vpc/home?region=us-east-1#subnets:filter=
+          - Ref: VpcStackVpcprivateSubnet1SubnetB9449155
+  VpcStackIsolatedSubnet2Output96541475:
+    Description: CDK Isolated Subnet2 Id
+    Value:
+      Fn::Join:
+        - ""
+        - - https://console.aws.amazon.com/vpc/home?region=us-east-1#subnets:filter=
+          - Ref: VpcStackVpcprivateSubnet2Subnet5C26BE19
+  VpcStackPublicSubnet1OutputCD4FCF88:
+    Description: CDK Public Subnet1 Id
+    Value:
+      Fn::Join:
+        - ""
+        - - https://console.aws.amazon.com/vpc/home?region=us-east-1#subnets:filter=
+          - Ref: VpcStackVpcpublicSubnet1Subnet39D98FCF
+  VpcStackPublicSubnet2OutputFF6C8F85:
+    Description: CDK Public Subnet2 Id
+    Value:
+      Fn::Join:
+        - ""
+        - - https://console.aws.amazon.com/vpc/home?region=us-east-1#subnets:filter=
+          - Ref: VpcStackVpcpublicSubnet2Subnet0A3B64E1
