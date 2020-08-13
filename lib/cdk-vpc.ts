@@ -20,7 +20,6 @@ export class VpcStack extends cdk.Construct {
         if (!vpcId) {
             throw new Error('vpcid undefined');
         } else {
-            console.log("use existing vpcId");
             this.vpc = ec2.Vpc.fromLookup(this, props.name, {
                 vpcId: vpcId
             });
