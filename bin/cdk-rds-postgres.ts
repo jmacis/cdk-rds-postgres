@@ -3,7 +3,6 @@ import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
 // import { CdkRdsPostgresStack } from '../lib/cdk-rds-postgres-stack';
 import { CdkRdsStack } from '../lib/cdk-rds-stack';
-import { CdkVpcStack } from '../lib/cdk-vpc-stack';
 import { Tag } from '@aws-cdk/core';
 import { stackTags } from './cdk-config';
 import { getConfig } from './config';
