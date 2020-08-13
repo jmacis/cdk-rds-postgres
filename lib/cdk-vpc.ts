@@ -1,7 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Config } from '../bin/config';
 import * as ec2 from '@aws-cdk/aws-ec2';
-// import { Vpc, SubnetType, SecurityGroup, ISubnet } from "@aws-cdk/aws-ec2";
 
 export interface VpcProps {
     name: string;
