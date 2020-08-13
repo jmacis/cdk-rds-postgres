@@ -43,7 +43,7 @@ export class RdsStack extends cdk.Construct {
         const dbKmsKey = (config.database.storageEncrypted === true) ? kms.Key.fromKeyArn(this, 'KmsKey', dbKmsArn) : undefined;
 
         // create db security group resource
-        const dbSecurityGroup = SecurityGroup.fromSecurityGroupId(this, 'SG', config.database.securityGroupId, {
+        const dbSecurityGroup = SecurityGroup.fromSecurityGroupId(this, 'RdsInstanceSG', config.database.rdsinstanceSecurityGroupId, {
             mutable: true
         });
 
@@ -92,8 +92,8 @@ export class RdsStack extends cdk.Construct {
         });
 
         // get rotate lambda function arn
-        const func = lambda.Function.fromFunctionArn(this, 'MyLambdaRotationFunctionTest',
-            `arn:aws:lambda:${this.dbSecret.secret.stack.region}:${this.dbSecret.secret.stack.account}:function:MyLambdaRotationFunctionTest`);
+        const func = lambda.Function.fromFunctionArn(this, config.secretsManager.lambdaScheduleRotateFunc,
+            `arn:aws:lambda:${this.dbSecret.secret.stack.region}:${this.dbSecret.secret.stack.account}:function:${config.secretsManager.lambdaScheduleRotateFunc}`);
 
         // add secrets manager rotation schedule
         this.dbSecret.secret.addRotationSchedule('RotateSecrets', {
@@ -101,14 +101,9 @@ export class RdsStack extends cdk.Construct {
             automaticallyAfter: cdk.Duration.days(config.secretsManager.scheduleRotateDays),
         });
 
-        // @TODO moved to vpc
-        // create ingress rule lambda port 443
-        // this.db.connections.allowFromAnyIpv4(Port.tcp(443));
-
         // add tags to db master
         Tag.add(this.db, 'Name', 'Master Database');
 
-        // @TODO moved to vpc
         // create ingress rule port 5432
         this.db.connections.allowDefaultPortFromAnyIpv4();
 

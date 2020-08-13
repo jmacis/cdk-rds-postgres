@@ -36,7 +36,8 @@ export interface DatabaseConfig {
     deletionProtection: boolean;
     engineVersion: PostgresEngineVersion;
     cloudwatchLogsRetention: RetentionDays;
-    securityGroupId: string;
+    rdsinstanceSecurityGroupId: string;
+    readreplicaSecurityGroupId: string;
 }
 
 export interface CloudwatchConfig {
@@ -53,6 +54,7 @@ export interface SecretsManagerConfig {
     excludePunctuation: boolean;
     generateStringKey: string;
     scheduleRotateDays: number;
+    lambdaScheduleRotateFunc: string;
 }
 
 export interface Config {
@@ -104,7 +106,8 @@ export function getConfig(): Config {
             deletionProtection: assert(process.env.DATABASE_DELETION_PROTECTION) === "true",
             engineVersion: assert(configProps[`${env}`][`${region}`][`${account}`].engineVersion),
             cloudwatchLogsRetention: assert(configProps[`${env}`][`${region}`][`${account}`].cloudwatchLogsRetention),
-            securityGroupId: assert(configProps[`${env}`][`${region}`][`${account}`].dbSecurityGroupId),
+            rdsinstanceSecurityGroupId: assert(configProps[`${env}`][`${region}`][`${account}`].rdsinstanceSecurityGroupId),
+            readreplicaSecurityGroupId: assert(configProps[`${env}`][`${region}`][`${account}`].readreplicaSecurityGroupId),
         },
         cloudwatchAlarms: {
             cpuUtilzThreshold: Number(assert(process.env.CLOUDWATCH_ALARM_CPU_UTILZ_THRESHOLD)),
@@ -119,6 +122,7 @@ export function getConfig(): Config {
             excludePunctuation: assert(process.env.SECRETMANAGER_EXCLUDE_PUNCTUATION) === "true",
             generateStringKey: assert(process.env.SECRETMANAGER_GENERATE_STRING_KEY),
             scheduleRotateDays: Number(assert(process.env.SECRETMANAGER_SCHEDULE_ROTATE_DAYS)),
+            lambdaScheduleRotateFunc: assert(process.env.SECRETMANAGER_LAMBDA_ROTATE_FUNCTION),
         }
     };
 }
@@ -132,24 +136,28 @@ export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: 
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            dbSecurityGroupId: 'sg-055138550b8535c2b',
+            rdsinstanceSecurityGroupId: 'sg-08d0ca7ee74438217',
+            readreplicaSecurityGroupId: 'sg-0d4edacc2377ae5bf',
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            dbSecurityGroupId: undefined,
+            rdsinstanceSecurityGroupId: undefined,
+            readreplicaSecurityGroupId: undefined,
         }
     },
     'us-west-2': {
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            dbSecurityGroupId: undefined,
+            rdsinstanceSecurityGroupId: undefined,
+            readreplicaSecurityGroupId: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            dbSecurityGroupId: undefined,
+            rdsinstanceSecurityGroupId: undefined,
+            readreplicaSecurityGroupId: undefined,
         }
     }
 };
@@ -159,24 +167,28 @@ export const configPropsStag: { [key: string]: { [key: string]: { [key: string]:
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            dbSecurityGroupId: undefined,
+            rdsinstanceSecurityGroupId: undefined,
+            readreplicaSecurityGroupId: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            dbSecurityGroupId: undefined,
+            rdsinstanceSecurityGroupId: undefined,
+            readreplicaSecurityGroupId: undefined,
         }
     },
     'us-west-2': {
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            dbSecurityGroupId: undefined,
+            rdsinstanceSecurityGroupId: undefined,
+            readreplicaSecurityGroupId: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            dbSecurityGroupId: undefined,
+            rdsinstanceSecurityGroupId: undefined,
+            readreplicaSecurityGroupId: undefined,
         }
     }
 };
@@ -186,24 +198,28 @@ export const configPropsProd: { [key: string]: { [key: string]: { [key: string]:
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
-            dbSecurityGroupId: undefined,
+            rdsinstanceSecurityGroupId: undefined,
+            readreplicaSecurityGroupId: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
-            dbSecurityGroupId: undefined,
+            rdsinstanceSecurityGroupId: undefined,
+            readreplicaSecurityGroupId: undefined,
         }
     },
     'us-west-2': {
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
-            dbSecurityGroupId: undefined,
+            rdsinstanceSecurityGroupId: undefined,
+            readreplicaSecurityGroupId: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
-            dbSecurityGroupId: undefined,
+            rdsinstanceSecurityGroupId: undefined,
+            readreplicaSecurityGroupId: undefined,
         }
     }
 };

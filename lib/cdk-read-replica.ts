@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Config } from '../bin/config';
 import * as rds from '@aws-cdk/aws-rds';
 import { Tag, CfnOutput } from '@aws-cdk/core';
-import { Vpc, IVpc, InstanceType, SubnetType } from '@aws-cdk/aws-ec2'
+import { Vpc, IVpc, InstanceType, SubnetType, SecurityGroup } from '@aws-cdk/aws-ec2'
 import { RemovalPolicy } from '@aws-cdk/core';
 
 export interface ReadReplicaProps {
@@ -17,6 +17,11 @@ export class ReadReplicaStack extends cdk.Construct {
     constructor(scope: cdk.Construct, id: string, props: ReadReplicaProps, config: Config) {
         super(scope, id);
 
+        // create db security group resource
+        const dbSecurityGroup = SecurityGroup.fromSecurityGroupId(this, 'ReadReplicaSG', config.database.readreplicaSecurityGroupId, {
+            mutable: true
+        });
+
         //create rds db read replica
         this.replica = new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
             instanceIdentifier: 'cdk-rds-postgres-read',
@@ -25,6 +30,7 @@ export class ReadReplicaStack extends cdk.Construct {
             sourceDatabaseInstance: props.db,
             vpc: props.vpc,
             vpcPlacement: { subnetType: SubnetType.PUBLIC },
+            securityGroups: [dbSecurityGroup],
             deleteAutomatedBackups: config.database.deleteAutomatedBackups,
             removalPolicy: RemovalPolicy.DESTROY,
             deletionProtection: config.database.deletionProtection
