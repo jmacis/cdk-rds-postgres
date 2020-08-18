@@ -27,6 +27,7 @@ cdk destroy -c env=development --profile my-profile <br />
 ## Create Resources
 1 Secrets Manager <br />
 1 SNS Topic <br />
+1 EC2 Bastion <br />
 1 DB Parameter Group <br />
 1 DB Instance <br />
 1 DB Read Replica <br />
