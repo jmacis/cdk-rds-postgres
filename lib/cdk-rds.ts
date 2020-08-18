@@ -112,13 +112,13 @@ export class RdsStack extends cdk.Construct {
         // create ingress rule port 5432 ec2 bastion
         this.db.connections.allowFrom(ec2SecurityGroup.connections, Port.tcp(config.database.tcpPort), 'from ec2 bastion to rds');
 
-        // create secrets manager security group resource
-        const secretslambdaSecurityGroup = SecurityGroup.fromSecurityGroupId(this, 'SecretsManagerSG', config.database.secretslambdaSecurityGroupId, {
+        // create secrets lambda security group resource
+        const secretslambdaSecurityGroup = SecurityGroup.fromSecurityGroupId(this, 'SecretsLambdaSG', config.database.secretslambdaSecurityGroupId, {
             mutable: true
         });
 
         // create ingress rule port 5432 secrets manager lambda
-        this.db.connections.allowFrom(secretslambdaSecurityGroup.connections, Port.tcp(config.database.tcpPort), 'from secrets manager lambda function to rds');
+        this.db.connections.allowFrom(secretslambdaSecurityGroup.connections, Port.tcp(config.database.tcpPort), 'from secrets lambda function to rds');
 
         // create ingress rule port 5432
         // this.db.connections.allowDefaultPortFromAnyIpv4();
