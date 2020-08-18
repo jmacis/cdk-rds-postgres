@@ -45,7 +45,13 @@ export class Ec2Stack extends cdk.Construct {
             }
         });
 
-        // create ingress rule ssh
+        // create ingress rule bastion ssh
         this.ec2Instance.connections.allowFrom(ec2.Peer.anyIpv4(), ec2.Port.tcp(config.ec2Instance.sshPort), `from 0.0.0.0/0:${config.ec2Instance.sshPort}`);
+
+        // create cfn output ec2 instance
+        new cdk.CfnOutput(this, 'BastionIdentifier', {
+            description: 'CDK EC2 Instance Identifier',
+            value: `${config.awsConsole}/ec2/home?region=${cdk.Aws.REGION}#Instances:search=${this.ec2Instance.instanceId};sort=instanceId`
+        });
     }
 }
