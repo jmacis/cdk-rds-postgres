@@ -29,7 +29,7 @@ export class ReadReplicaStack extends cdk.Construct {
             // instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
             sourceDatabaseInstance: props.db,
             vpc: props.vpc,
-            vpcPlacement: { subnetType: SubnetType.PUBLIC },
+            vpcPlacement: { subnetType: SubnetType.ISOLATED },
             securityGroups: [dbSecurityGroup],
             deleteAutomatedBackups: config.database.deleteAutomatedBackups,
             removalPolicy: RemovalPolicy.DESTROY,

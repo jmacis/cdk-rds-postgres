@@ -1,6 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { PostgresEngineVersion } from '@aws-cdk/aws-rds';
 import { RetentionDays } from '@aws-cdk/aws-logs';
+import { InstanceClass, InstanceSize } from '@aws-cdk/aws-ec2'
 
 const env: string | undefined = process.env.NODE_ENV;
 const region: string | undefined = process.env.CDK_DEPLOY_REGION;
@@ -21,6 +22,13 @@ export interface InstanceConfig {
     keyName: string;
 }
 
+export interface Ec2InstanceConfig {
+    keyName: string;
+    sshPort: number;
+    bastionInstanceClass: InstanceClass;
+    bastionInstanceSize: InstanceSize;
+}
+
 export interface DatabaseConfig {
     masterUsername: string;
     instanceType: string;
@@ -38,6 +46,9 @@ export interface DatabaseConfig {
     cloudwatchLogsRetention: RetentionDays;
     rdsinstanceSecurityGroupId: string;
     readreplicaSecurityGroupId: string;
+    ec2bastionSecurityGroupId: string;
+    secretslambdaSecurityGroupId: string;
+    tcpPort: number;
 }
 
 export interface CloudwatchConfig {
@@ -65,6 +76,7 @@ export interface Config {
     database: DatabaseConfig;
     cloudwatchAlarms: CloudwatchConfig;
     secretsManager: SecretsManagerConfig;
+    ec2Instance: Ec2InstanceConfig;
 }
 
 function assert(value: any): any {
@@ -108,6 +120,9 @@ export function getConfig(): Config {
             cloudwatchLogsRetention: assert(configProps[`${env}`][`${region}`][`${account}`].cloudwatchLogsRetention),
             rdsinstanceSecurityGroupId: assert(configProps[`${env}`][`${region}`][`${account}`].rdsinstanceSecurityGroupId),
             readreplicaSecurityGroupId: assert(configProps[`${env}`][`${region}`][`${account}`].readreplicaSecurityGroupId),
+            ec2bastionSecurityGroupId: assert(configProps[`${env}`][`${region}`][`${account}`].ec2bastionSecurityGroupId),
+            secretslambdaSecurityGroupId: assert(configProps[`${env}`][`${region}`][`${account}`].secretslambdaSecurityGroupId),
+            tcpPort: Number(assert(process.env.DATABASE_TCP_PORT)),
         },
         cloudwatchAlarms: {
             cpuUtilzThreshold: Number(assert(process.env.CLOUDWATCH_ALARM_CPU_UTILZ_THRESHOLD)),
@@ -123,6 +138,12 @@ export function getConfig(): Config {
             generateStringKey: assert(process.env.SECRETMANAGER_GENERATE_STRING_KEY),
             scheduleRotateDays: Number(assert(process.env.SECRETMANAGER_SCHEDULE_ROTATE_DAYS)),
             lambdaScheduleRotateFunc: assert(process.env.SECRETMANAGER_LAMBDA_ROTATE_FUNCTION),
+        },
+        ec2Instance: {
+            keyName: assert(process.env.EC2_INSTANCE_KEY_NAME),
+            sshPort: Number(assert(process.env.EC2_INSTANCE_SSH_PORT)),
+            bastionInstanceClass: assert(configProps[`${env}`][`${region}`][`${account}`].ec2BastionInstanceClass),
+            bastionInstanceSize: assert(configProps[`${env}`][`${region}`][`${account}`].ec2BastionInstanceSize),
         }
     };
 }
@@ -136,14 +157,22 @@ export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: 
         '009963118558': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
-            rdsinstanceSecurityGroupId: 'sg-08d0ca7ee74438217',
-            readreplicaSecurityGroupId: 'sg-0d4edacc2377ae5bf',
+            rdsinstanceSecurityGroupId: 'sg-083f69e503d75933d',
+            readreplicaSecurityGroupId: 'sg-002863dad2b349f10',
+            ec2bastionSecurityGroupId: 'sg-0b594b5b56decef31',
+            secretslambdaSecurityGroupId: 'sg-0400c51673603019f',
+            ec2BastionInstanceClass: InstanceClass.T2,
+            ec2BastionInstanceSize: InstanceSize.MICRO,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
             rdsinstanceSecurityGroupId: undefined,
             readreplicaSecurityGroupId: undefined,
+            ec2bastionSecurityGroupId: undefined,
+            secretslambdaSecurityGroupId: undefined,
+            ec2BastionInstanceClass: undefined,
+            ec2BastionInstanceSize: undefined,
         }
     },
     'us-west-2': {
@@ -152,12 +181,20 @@ export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: 
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
             rdsinstanceSecurityGroupId: undefined,
             readreplicaSecurityGroupId: undefined,
+            ec2bastionSecurityGroupId: undefined,
+            secretslambdaSecurityGroupId: undefined,
+            ec2BastionInstanceClass: undefined,
+            ec2BastionInstanceSize: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_7,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
             rdsinstanceSecurityGroupId: undefined,
             readreplicaSecurityGroupId: undefined,
+            ec2bastionSecurityGroupId: undefined,
+            secretslambdaSecurityGroupId: undefined,
+            ec2BastionInstanceClass: undefined,
+            ec2BastionInstanceSize: undefined,
         }
     }
 };
@@ -169,12 +206,20 @@ export const configPropsStag: { [key: string]: { [key: string]: { [key: string]:
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
             rdsinstanceSecurityGroupId: undefined,
             readreplicaSecurityGroupId: undefined,
+            ec2bastionSecurityGroupId: undefined,
+            secretslambdaSecurityGroupId: undefined,
+            ec2BastionInstanceClass: undefined,
+            ec2BastionInstanceSize: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
             rdsinstanceSecurityGroupId: undefined,
             readreplicaSecurityGroupId: undefined,
+            ec2bastionSecurityGroupId: undefined,
+            secretslambdaSecurityGroupId: undefined,
+            ec2BastionInstanceClass: undefined,
+            ec2BastionInstanceSize: undefined,
         }
     },
     'us-west-2': {
@@ -183,12 +228,20 @@ export const configPropsStag: { [key: string]: { [key: string]: { [key: string]:
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
             rdsinstanceSecurityGroupId: undefined,
             readreplicaSecurityGroupId: undefined,
+            ec2bastionSecurityGroupId: undefined,
+            secretslambdaSecurityGroupId: undefined,
+            ec2BastionInstanceClass: undefined,
+            ec2BastionInstanceSize: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.ONE_MONTH,
             rdsinstanceSecurityGroupId: undefined,
             readreplicaSecurityGroupId: undefined,
+            ec2bastionSecurityGroupId: undefined,
+            secretslambdaSecurityGroupId: undefined,
+            ec2BastionInstanceClass: undefined,
+            ec2BastionInstanceSize: undefined,
         }
     }
 };
@@ -200,12 +253,20 @@ export const configPropsProd: { [key: string]: { [key: string]: { [key: string]:
             cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
             rdsinstanceSecurityGroupId: undefined,
             readreplicaSecurityGroupId: undefined,
+            ec2bastionSecurityGroupId: undefined,
+            secretslambdaSecurityGroupId: undefined,
+            ec2BastionInstanceClass: undefined,
+            ec2BastionInstanceSize: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
             rdsinstanceSecurityGroupId: undefined,
             readreplicaSecurityGroupId: undefined,
+            ec2bastionSecurityGroupId: undefined,
+            secretslambdaSecurityGroupId: undefined,
+            ec2BastionInstanceClass: undefined,
+            ec2BastionInstanceSize: undefined,
         }
     },
     'us-west-2': {
@@ -214,12 +275,20 @@ export const configPropsProd: { [key: string]: { [key: string]: { [key: string]:
             cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
             rdsinstanceSecurityGroupId: undefined,
             readreplicaSecurityGroupId: undefined,
+            ec2bastionSecurityGroupId: undefined,
+            secretslambdaSecurityGroupId: undefined,
+            ec2BastionInstanceClass: undefined,
+            ec2BastionInstanceSize: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
             cloudwatchLogsRetention: RetentionDays.SIX_MONTHS,
             rdsinstanceSecurityGroupId: undefined,
             readreplicaSecurityGroupId: undefined,
+            ec2bastionSecurityGroupId: undefined,
+            secretslambdaSecurityGroupId: undefined,
+            ec2BastionInstanceClass: undefined,
+            ec2BastionInstanceSize: undefined,
         }
     }
 };

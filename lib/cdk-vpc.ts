@@ -17,12 +17,11 @@ export class VpcStack extends cdk.Construct {
         const vpcId: string | undefined = this.node.tryGetContext('vpcid');
 
         // check vpcid 
-        if (!vpcId) {
+        if (!vpcId)
             throw new Error('vpcid undefined');
-        } else {
-            this.vpc = ec2.Vpc.fromLookup(this, props.name, {
-                vpcId: vpcId
-            });
-        }
+
+        this.vpc = ec2.Vpc.fromLookup(this, props.name, {
+            vpcId: vpcId
+        });
     }
 }

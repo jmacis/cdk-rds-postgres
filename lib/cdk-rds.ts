@@ -3,7 +3,7 @@ import { Config } from '../bin/config';
 import * as rds from '@aws-cdk/aws-rds';
 import * as kms from '@aws-cdk/aws-kms';
 import { Tag } from '@aws-cdk/core';
-import { Vpc, IVpc, InstanceType, SubnetType, Port, SecurityGroup } from '@aws-cdk/aws-ec2';
+import { Vpc, IVpc, InstanceType, SubnetType, Port, SecurityGroup, Peer } from '@aws-cdk/aws-ec2';
 import { RemovalPolicy } from '@aws-cdk/core';
 import { SecretsStack } from './cdk-secrets';
 import { ParameterGroupStack } from './cdk-parameter-group';
@@ -62,7 +62,7 @@ export class RdsStack extends cdk.Construct {
             vpc: props.vpc,
             multiAz: config.database.multiAz,
             parameterGroup: this.dbParameterGroup.parameterGroup,
-            vpcPlacement: { subnetType: SubnetType.PUBLIC },
+            vpcPlacement: { subnetType: SubnetType.ISOLATED },
             securityGroups: [dbSecurityGroup],
             preferredBackupWindow: config.database.preferredBackupWindow,
             preferredMaintenanceWindow: config.database.preferredMaintenanceWindow,
@@ -104,8 +104,28 @@ export class RdsStack extends cdk.Construct {
         // add tags to db master
         Tag.add(this.db, 'Name', 'Master Database');
 
+        // create ec2 bastion security group resource
+        const ec2SecurityGroup = SecurityGroup.fromSecurityGroupId(this, 'Ec2BastionInstanceSG', config.database.ec2bastionSecurityGroupId, {
+            mutable: true
+        });
+
+        // create ingress rule port 5432 ec2 bastion
+        this.db.connections.allowFrom(ec2SecurityGroup.connections, Port.tcp(config.database.tcpPort), 'from ec2 bastion to rds');
+
+        // create secrets manager security group resource
+        const secretslambdaSecurityGroup = SecurityGroup.fromSecurityGroupId(this, 'SecretsManagerSG', config.database.secretslambdaSecurityGroupId, {
+            mutable: true
+        });
+
+        // create ingress rule port 5432 secrets manager lambda
+        this.db.connections.allowFrom(secretslambdaSecurityGroup.connections, Port.tcp(config.database.tcpPort), 'from secrets manager lambda function to rds');
+
         // create ingress rule port 5432
-        this.db.connections.allowDefaultPortFromAnyIpv4();
+        // this.db.connections.allowDefaultPortFromAnyIpv4();
+        // this.asg.connections.allowFrom(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'from 0.0.0.0/0:22');
+
+        // create ingress rule port 5432 secrets manager rotate lambda
+        // this.db.connections.allowFrom(Peer.ipv4(config.vpc.cidr), Port.tcp(5432), `from ${config.vpc.cidr}:5432`);
 
         // create cfn output db end point address
         new cdk.CfnOutput(this, 'DbInstanceEndPoint', {

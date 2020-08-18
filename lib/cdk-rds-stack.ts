@@ -4,6 +4,7 @@ import { VpcStack } from './cdk-vpc';
 import { RdsStack } from './cdk-rds';
 import { CloudWatchStack } from './cdk-sns-cloudwatch';
 import { AlbStack } from './cdk-alb';
+import { Ec2Stack } from './cdk-ec2';
 
 export class CdkRdsStack extends cdk.Stack {
 
@@ -37,6 +38,13 @@ export class CdkRdsStack extends cdk.Stack {
 
         // create sns cloudwatch resource
         const snsStackEntity = new CloudWatchStack(this, 'SnsCloudWatch', snsCloudWatchProps, config);
+
+        const ec2Props = {
+            vpc: vpcStackEntity.vpc
+        };
+
+        // create application load balancer resource
+        const Ec2StackEntity = new Ec2Stack(this, 'Ec2Instance', ec2Props, config);
 
         // const albProps = {
         //     vpc: vpcStackEntity.vpc
