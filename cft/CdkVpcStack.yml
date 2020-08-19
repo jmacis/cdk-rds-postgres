@@ -307,11 +307,11 @@ Resources:
       PrivateDnsEnabled: true
       SecurityGroupIds:
         - Fn::GetAtt:
-            - VpcStackRdsInstanceSecurityGroupF672BFBF
+            - VpcStackSecretsLambdaSecurityGroupA03D6AA2
             - GroupId
       SubnetIds:
-        - Ref: VpcStackVpcpublicSubnet1Subnet39D98FCF
-        - Ref: VpcStackVpcpublicSubnet2Subnet0A3B64E1
+        - Ref: VpcStackVpcprivateSubnet1SubnetB9449155
+        - Ref: VpcStackVpcprivateSubnet2Subnet5C26BE19
       VpcEndpointType: Interface
     Metadata:
       aws:cdk:path: CdkVpcStack/VpcStack/Vpc/SecretsManagerVpcEndpoint/Resource
@@ -323,22 +323,6 @@ Resources:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
-      SecurityGroupIngress:
-        - CidrIp:
-            Fn::GetAtt:
-              - VpcStackVpc52EDDC7E
-              - CidrBlock
-          Description:
-            Fn::Join:
-              - ""
-              - - "from "
-                - Fn::GetAtt:
-                    - VpcStackVpc52EDDC7E
-                    - CidrBlock
-                - :443
-          FromPort: 443
-          IpProtocol: tcp
-          ToPort: 443
       Tags:
         - Key: AppName
           Value: test-vpc
@@ -377,6 +361,68 @@ Resources:
         Ref: VpcStackVpc52EDDC7E
     Metadata:
       aws:cdk:path: CdkVpcStack/VpcStack/ReadReplicaSecurityGroup/Resource
+  VpcStackEc2BastionSecurityGroup12DAC376:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for EC2 Bastion database
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/Ec2BastionSecurityGroup/Resource
+  VpcStackSecretsLambdaSecurityGroupA03D6AA2:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for Secrets Lambda database
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp:
+            Fn::GetAtt:
+              - VpcStackVpc52EDDC7E
+              - CidrBlock
+          Description:
+            Fn::Join:
+              - ""
+              - - "from "
+                - Fn::GetAtt:
+                    - VpcStackVpc52EDDC7E
+                    - CidrBlock
+                - :443
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+      Tags:
+        - Key: AppName
+          Value: test-vpc
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: StackName
+          Value: CDK-VPC
+        - Key: StackOwner
+          Value: John Macis
+      VpcId:
+        Ref: VpcStackVpc52EDDC7E
+    Metadata:
+      aws:cdk:path: CdkVpcStack/VpcStack/SecretsLambdaSecurityGroup/Resource
   LambdaStackCfnApplicationA3F0AB56:
     Type: AWS::Serverless::Application
     Properties:
@@ -399,7 +445,7 @@ Resources:
               - Ref: VpcStackVpcpublicSubnet2Subnet0A3B64E1
         vpcSecurityGroupIds:
           Fn::GetAtt:
-            - VpcStackRdsInstanceSecurityGroupF672BFBF
+            - VpcStackSecretsLambdaSecurityGroupA03D6AA2
             - GroupId
       Tags:
         AppName: test-vpc
@@ -451,3 +497,19 @@ Outputs:
         - ""
         - - https://console.aws.amazon.com/vpc/home?region=us-east-1#subnets:filter=
           - Ref: VpcStackVpcpublicSubnet2Subnet0A3B64E1
+  LambdaStackFunctionIdentifierEE7F4F7F:
+    Description: CDK VPC Lambda Function
+    Value:
+      Fn::Join:
+        - ""
+        - - https://console.aws.amazon.com/lambda/home?region=
+          - Ref: AWS::Region
+          - "#/functions/MyLambdaRotationFunction"
+  LambdaStackSamAppIdentifier5D718BD8:
+    Description: CDK VPC SAM Application
+    Value:
+      Fn::Join:
+        - ""
+        - - https://console.aws.amazon.com/lambda/home?region=
+          - Ref: AWS::Region
+          - "#/applications/CdkVpcStack"

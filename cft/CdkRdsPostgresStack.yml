@@ -78,30 +78,35 @@ Resources:
           Value: John Macis
     Metadata:
       aws:cdk:path: CdkRdsPostgresStack/Rds/ParameterGroup/ParameterGroup/Resource
-  RdsRdsInstanceSGfrom00000IndirectPortF118E2A8:
+  ? RdsRdsInstanceSGfromCdkRdsPostgresStackRdsEc2BastionInstanceSG1A923F645432EF44AEAA
+  : Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: from ec2 bastion to rds
+      FromPort: 5432
+      GroupId: sg-0029660ed9d7f2b93
+      SourceSecurityGroupId: sg-021b67bf18034de08
+      ToPort: 5432
+    Metadata:
+      aws:cdk:path: CdkRdsPostgresStack/Rds/RdsInstanceSG/from CdkRdsPostgresStackRdsEc2BastionInstanceSG1A923F64:5432
+  RdsRdsInstanceSGfromCdkRdsPostgresStackRdsSecretsLambdaSGDE4E1E415432552DA0AF:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       IpProtocol: tcp
-      CidrIp: 0.0.0.0/0
-      Description: from 0.0.0.0/0:{IndirectPort}
-      FromPort:
-        Fn::GetAtt:
-          - RdsRdsInstance295A7CFA
-          - Endpoint.Port
-      GroupId: sg-08d0ca7ee74438217
-      ToPort:
-        Fn::GetAtt:
-          - RdsRdsInstance295A7CFA
-          - Endpoint.Port
+      Description: from secrets lambda function to rds
+      FromPort: 5432
+      GroupId: sg-0029660ed9d7f2b93
+      SourceSecurityGroupId: sg-0d7e30b362b15ded6
+      ToPort: 5432
     Metadata:
-      aws:cdk:path: CdkRdsPostgresStack/Rds/RdsInstanceSG/from 0.0.0.0_0:{IndirectPort}
+      aws:cdk:path: CdkRdsPostgresStack/Rds/RdsInstanceSG/from CdkRdsPostgresStackRdsSecretsLambdaSGDE4E1E41:5432
   RdsRdsInstanceSubnetGroup988E36CE:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
       DBSubnetGroupDescription: Subnet group for RdsInstance database
       SubnetIds:
-        - subnet-08bb02bfb440f2780
-        - subnet-070add83c45b9dff8
+        - subnet-00fa9604ac4e8dda5
+        - subnet-0c3e3b4b580683721
       Tags:
         - Key: AppName
           Value: test-rds-postgres-db
@@ -120,7 +125,7 @@ Resources:
   RdsRdsInstance295A7CFA:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceClass: db.t3.micro
+      DBInstanceClass: db.t2.micro
       AllocatedStorage: "20"
       AutoMinorVersionUpgrade: false
       BackupRetentionPeriod: 7
@@ -151,8 +156,8 @@ Resources:
       MultiAZ: false
       PreferredBackupWindow: 19:00-20:30
       PreferredMaintenanceWindow: Sun:22:00-Sun:22:30
-      PubliclyAccessible: true
-      StorageEncrypted: true
+      PubliclyAccessible: false
+      StorageEncrypted: false
       StorageType: gp2
       Tags:
         - Key: AppName
@@ -168,88 +173,11 @@ Resources:
         - Key: StackOwner
           Value: John Macis
       VPCSecurityGroups:
-        - sg-08d0ca7ee74438217
+        - sg-0029660ed9d7f2b93
     UpdateReplacePolicy: Delete
     DeletionPolicy: Delete
     Metadata:
       aws:cdk:path: CdkRdsPostgresStack/Rds/RdsInstance/Resource
-  RdsReadReplicaReadReplicaSGfrom00000IndirectPortAC2FA7BF:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      IpProtocol: tcp
-      CidrIp: 0.0.0.0/0
-      Description: from 0.0.0.0/0:{IndirectPort}
-      FromPort:
-        Fn::GetAtt:
-          - RdsReadReplica3BCA60CE
-          - Endpoint.Port
-      GroupId: sg-0d4edacc2377ae5bf
-      ToPort:
-        Fn::GetAtt:
-          - RdsReadReplica3BCA60CE
-          - Endpoint.Port
-    Metadata:
-      aws:cdk:path: CdkRdsPostgresStack/Rds/ReadReplica/ReadReplicaSG/from 0.0.0.0_0:{IndirectPort}
-  RdsReadReplicaSubnetGroupE96BA67D:
-    Type: AWS::RDS::DBSubnetGroup
-    Properties:
-      DBSubnetGroupDescription: Subnet group for ReadReplica database
-      SubnetIds:
-        - subnet-08bb02bfb440f2780
-        - subnet-070add83c45b9dff8
-      Tags:
-        - Key: AppName
-          Value: test-rds-postgres-db
-        - Key: CostCenter
-          Value: "1000"
-        - Key: Env
-          Value: Development
-        - Key: Name
-          Value: Read Replica Database
-        - Key: StackName
-          Value: CDK-RDS-POSTGRES-DB
-        - Key: StackOwner
-          Value: John Macis
-    Metadata:
-      aws:cdk:path: CdkRdsPostgresStack/Rds/ReadReplica/ReadReplica/SubnetGroup
-  RdsReadReplica3BCA60CE:
-    Type: AWS::RDS::DBInstance
-    Properties:
-      DBInstanceClass: db.t3.micro
-      CopyTagsToSnapshot: true
-      DBInstanceIdentifier: cdk-rds-postgres-read
-      DBSubnetGroupName:
-        Ref: RdsReadReplicaSubnetGroupE96BA67D
-      DeleteAutomatedBackups: true
-      DeletionProtection: false
-      PubliclyAccessible: true
-      SourceDBInstanceIdentifier:
-        Fn::Join:
-          - ""
-          - - "arn:"
-            - Ref: AWS::Partition
-            - ":rds:us-east-1:009963118558:db:"
-            - Ref: RdsRdsInstance295A7CFA
-      StorageType: gp2
-      Tags:
-        - Key: AppName
-          Value: test-rds-postgres-db
-        - Key: CostCenter
-          Value: "1000"
-        - Key: Env
-          Value: Development
-        - Key: Name
-          Value: Read Replica Database
-        - Key: StackName
-          Value: CDK-RDS-POSTGRES-DB
-        - Key: StackOwner
-          Value: John Macis
-      VPCSecurityGroups:
-        - sg-0d4edacc2377ae5bf
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Metadata:
-      aws:cdk:path: CdkRdsPostgresStack/Rds/ReadReplica/ReadReplica/Resource
   SnsCloudWatchSnsTopicDE611FF3:
     Type: AWS::SNS::Topic
     Properties:
@@ -312,6 +240,96 @@ Resources:
       Threshold: 7000
     Metadata:
       aws:cdk:path: CdkRdsPostgresStack/SnsCloudWatch/IopsAlarm/Resource
+  Ec2InstanceEc2BastionInstanceSGfrom00000229DD2EA83:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      CidrIp: 0.0.0.0/0
+      Description: from 0.0.0.0/0:22
+      FromPort: 22
+      GroupId: sg-021b67bf18034de08
+      ToPort: 22
+    Metadata:
+      aws:cdk:path: CdkRdsPostgresStack/Ec2Instance/Ec2BastionInstanceSG/from 0.0.0.0_0:22
+  Ec2InstanceEc2InstanceRoleE0DD0E54:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+        Version: "2012-10-17"
+      Tags:
+        - Key: AppName
+          Value: test-rds-postgres-db
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: Name
+          Value: CdkRdsPostgresStack/Ec2Instance/Ec2
+        - Key: StackName
+          Value: CDK-RDS-POSTGRES-DB
+        - Key: StackOwner
+          Value: John Macis
+    Metadata:
+      aws:cdk:path: CdkRdsPostgresStack/Ec2Instance/Ec2/InstanceRole/Resource
+  Ec2InstanceEc2InstanceProfile0C0DA720:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: Ec2InstanceEc2InstanceRoleE0DD0E54
+    Metadata:
+      aws:cdk:path: CdkRdsPostgresStack/Ec2Instance/Ec2/InstanceProfile
+  Ec2InstanceEc205A8953C:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: us-east-1a
+      IamInstanceProfile:
+        Ref: Ec2InstanceEc2InstanceProfile0C0DA720
+      ImageId:
+        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter
+      InstanceType: t2.micro
+      KeyName: jmacis-keypair
+      SecurityGroupIds:
+        - sg-021b67bf18034de08
+      SubnetId: subnet-078960f7b5a4dcf41
+      Tags:
+        - Key: AppName
+          Value: test-rds-postgres-db
+        - Key: CostCenter
+          Value: "1000"
+        - Key: Env
+          Value: Development
+        - Key: Name
+          Value: CdkRdsPostgresStack/Ec2Instance/Ec2
+        - Key: StackName
+          Value: CDK-RDS-POSTGRES-DB
+        - Key: StackOwner
+          Value: John Macis
+      UserData:
+        Fn::Base64: >-
+          #!/bin/bash
+
+          sudo yum update -y
+
+          wget https://yum.postgresql.org/11/redhat/rhel-6.9-x86_64/postgresql11-libs-11.8-1PGDG.rhel6.x86_64.rpm
+
+          wget https://yum.postgresql.org/11/redhat/rhel-6.9-x86_64/postgresql11-11.8-1PGDG.rhel6.x86_64.rpm
+
+          sudo yum clean all
+
+          sudo rpm -ivh postgresql11-libs-11.8-1PGDG.rhel6.x86_64.rpm
+
+          sudo rpm -ivh postgresql11-11.8-1PGDG.rhel6.x86_64.rpm
+
+          psql --version
+    DependsOn:
+      - Ec2InstanceEc2InstanceRoleE0DD0E54
+    Metadata:
+      aws:cdk:path: CdkRdsPostgresStack/Ec2Instance/Ec2/Resource
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
@@ -337,14 +355,6 @@ Outputs:
         - - https://console.aws.amazon.com/rds/home?region=us-east-1#database:id=
           - Ref: RdsRdsInstance295A7CFA
           - ;is-cluster=false
-  RdsReadReplicaReadReplicaEndPointDF856F29:
-    Description: CDK Read Replica Endpoint Address
-    Value:
-      Fn::GetAtt:
-        - RdsReadReplica3BCA60CE
-        - Endpoint.Address
-    Export:
-      Name: ReadReplicaEndPoint
   SnsCloudWatchSnsTopicOutput6618745A:
     Description: CDK SNS Topic
     Value:
@@ -352,3 +362,17 @@ Outputs:
         - ""
         - - https://console.aws.amazon.com/sns/home?region=us-east-1#/topic/
           - Ref: SnsCloudWatchSnsTopicDE611FF3
+  Ec2InstanceBastionIdentifier94C7A843:
+    Description: CDK EC2 Instance Identifier
+    Value:
+      Fn::Join:
+        - ""
+        - - https://console.aws.amazon.com/ec2/home?region=
+          - Ref: AWS::Region
+          - "#Instances:search="
+          - Ref: Ec2InstanceEc205A8953C
+          - ;sort=instanceId
+Parameters:
+  ? SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter
+  : Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2
