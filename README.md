@@ -41,5 +41,5 @@ cdk destroy -c env=development --profile my-profile <br />
 [ DB Master ] <br />
 ssh -i ~/.ssh/keypair.pem -L \<port\>:\<rds-master-endpoint\>:\<port\> ec2-user@\<instanceId\> -vvv <br />
 
-[DB Read Replica] <br />
+[ DB Read Replica ] <br />
 ssh -i ~/.ssh/keypair.pem -L \<port\>:\<rds-read-replica-endpoint\>:\<port\> ec2-user@\<instanceId\> -vvv <br />
