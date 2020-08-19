@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Config } from '../bin/config';
 import * as rds from '@aws-cdk/aws-rds';
 import { Tag, CfnOutput } from '@aws-cdk/core';
-import { Vpc, IVpc, InstanceType, SubnetType, SecurityGroup } from '@aws-cdk/aws-ec2'
+import { Vpc, IVpc, InstanceType, SubnetType, SecurityGroup, Port } from '@aws-cdk/aws-ec2'
 import { RemovalPolicy } from '@aws-cdk/core';
 
 export interface ReadReplicaProps {
@@ -39,8 +39,24 @@ export class ReadReplicaStack extends cdk.Construct {
         // add tags to db replica
         Tag.add(this.replica, 'Name', 'Read Replica Database');
 
+        // create master rds security group resource
+        const rdsInstanceSecurityGroup = SecurityGroup.fromSecurityGroupId(this, 'RdsInstanceSecurityGroup', config.database.rdsinstanceSecurityGroupId, {
+            mutable: true
+        });
+
+        // create ingress rule port 5432 master rds
+        this.replica.connections.allowFrom(rdsInstanceSecurityGroup.connections, Port.tcp(config.database.tcpPort), 'from master rds to read replica');
+
+        // create ec2 bastion security group resource
+        const ec2SecurityGroup = SecurityGroup.fromSecurityGroupId(this, 'Ec2BastionInstanceSG', config.database.ec2bastionSecurityGroupId, {
+            mutable: true
+        });
+
+        // create ingress rule port 5432 ec2 bastion
+        this.replica.connections.allowFrom(ec2SecurityGroup.connections, Port.tcp(config.database.tcpPort), 'from ec2 bastion to read replica');
+
         // create ingress rule port 5432
-        this.replica.connections.allowDefaultPortFromAnyIpv4();
+        // this.replica.connections.allowDefaultPortFromAnyIpv4();
 
         // create cfn output db end point address
         new CfnOutput(this, 'ReadReplicaEndPoint', {
