@@ -145,7 +145,7 @@ export function getConfig(): Config {
             lambdaScheduleRotateFunc: assert(process.env.SECRETMANAGER_LAMBDA_ROTATE_FUNCTION),
         },
         ec2Instance: {
-            keyName: assert(process.env.EC2_INSTANCE_KEY_NAME),
+            keyName: assert(configProps[`${env}`][`${region}`][`${account}`].ec2KeyName),
             sshPort: Number(assert(process.env.EC2_INSTANCE_SSH_PORT)),
             bastionInstanceClass: assert(configProps[`${env}`][`${region}`][`${account}`].ec2BastionInstanceClass),
             bastionInstanceSize: assert(configProps[`${env}`][`${region}`][`${account}`].ec2BastionInstanceSize),
@@ -171,6 +171,7 @@ export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: 
             secretslambdaSecurityGroupId: 'sg-0d7e30b362b15ded6',
             ec2BastionInstanceClass: InstanceClass.T2,
             ec2BastionInstanceSize: InstanceSize.MICRO,
+            ec2KeyName: 'jmacis-keypair',
             iamUserAccountName: 'ext-jmacis',
         },
         '083258740834': {
@@ -182,6 +183,7 @@ export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: 
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: InstanceClass.T2,
             ec2BastionInstanceSize: InstanceSize.MICRO,
+            ec2KeyName: 'MyEC2KeyPair',
             iamUserAccountName: 'root',
         }
     },
@@ -195,6 +197,7 @@ export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: 
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            ec2KeyName: undefined,
             iamUserAccountName: undefined,
         },
         '083258740834': {
@@ -206,6 +209,7 @@ export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: 
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            ec2KeyName: undefined,
             iamUserAccountName: undefined,
         }
     }
@@ -221,6 +225,7 @@ export const configPropsStag: { [key: string]: { [key: string]: { [key: string]:
             ec2bastionSecurityGroupId: undefined,
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
+            ec2KeyName: undefined,
             ec2BastionInstanceSize: undefined,
         },
         '083258740834': {
@@ -232,6 +237,7 @@ export const configPropsStag: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            ec2KeyName: undefined,
             iamUserAccountName: undefined,
         }
     },
@@ -245,6 +251,7 @@ export const configPropsStag: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            ec2KeyName: undefined,
             iamUserAccountName: undefined,
         },
         '083258740834': {
@@ -256,6 +263,7 @@ export const configPropsStag: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            ec2KeyName: undefined,
             iamUserAccountName: undefined,
         }
     }
@@ -272,6 +280,7 @@ export const configPropsProd: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            ec2KeyName: undefined,
             iamUserAccountName: undefined,
         },
         '083258740834': {
@@ -283,6 +292,7 @@ export const configPropsProd: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            ec2KeyName: undefined,
             iamUserAccountName: undefined,
         }
     },
@@ -296,6 +306,7 @@ export const configPropsProd: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            ec2KeyName: undefined,
             iamUserAccountName: undefined,
         },
         '083258740834': {
@@ -307,6 +318,7 @@ export const configPropsProd: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            ec2KeyName: undefined,
             iamUserAccountName: undefined,
         }
     }

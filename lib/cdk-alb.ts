@@ -37,7 +37,7 @@ export class AlbStack extends cdk.Construct {
         this.asg = new autoscaling.AutoScalingGroup(this, 'Asg', {
             vpc: props.vpc,
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
-            keyName: 'jmacis-keypair',
+            keyName: config.ec2Instance.keyName,
             machineImage: new ec2.AmazonLinuxImage,
             securityGroup: ec2SecurityGroup,
             userData: userData,
