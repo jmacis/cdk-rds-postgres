@@ -27,36 +27,7 @@ export class SecretsStack extends cdk.Construct {
         // create iam policy statement limiting actions
         const secretStatement = new iam.PolicyStatement({
             effect: iam.Effect.ALLOW,
-            principals: [new iam.ServicePrincipal('secretsmanager.amazonaws.com')],
             // principals: [new iam.AnyPrincipal()],
-            actions: [
-                'secretsmanager:Describe*',
-                'secretsmanager:Get*',
-                'secretsmanager:List*'
-            ],
-            resources: ['*']
-        });
-
-        // this.secret.addToResourcePolicy(secretStatement);
-
-        // create iam policy statement to specific secret
-        const secretStatement2 = new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            principals: [new iam.ServicePrincipal('secretsmanager.amazonaws.com')],
-            // principals: [new iam.AnyPrincipal()],
-            actions: [
-                'secretsmanager:*',
-            ],
-            resources: [
-                this.secret.secretArn
-            ]
-        });
-
-        // this.secret.addToResourcePolicy(secretStatement2);
-
-        // create iam policy statement to specific secret
-        const secretStatement3 = new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
             principals: [new iam.ArnPrincipal(`arn:aws:iam::${process.env.CDK_DEPLOY_ACCOUNT}:user/ext-jmacis`)],
             actions: [
                 'secretsmanager:Describe*',
@@ -66,7 +37,36 @@ export class SecretsStack extends cdk.Construct {
             resources: [this.secret.secretArn]
         });
 
-        this.secret.addToResourcePolicy(secretStatement3);
+        this.secret.addToResourcePolicy(secretStatement);
+
+        // // create iam policy statement to specific secret
+        // const secretStatement2 = new iam.PolicyStatement({
+        //     effect: iam.Effect.ALLOW,
+        //     principals: [new iam.ServicePrincipal('secretsmanager.amazonaws.com')],
+        //     // principals: [new iam.AnyPrincipal()],
+        //     actions: [
+        //         'secretsmanager:*',
+        //     ],
+        //     resources: [
+        //         this.secret.secretArn
+        //     ]
+        // });
+
+        // this.secret.addToResourcePolicy(secretStatement2);
+
+        // // create iam policy statement to specific secret
+        // const secretStatement3 = new iam.PolicyStatement({
+        //     effect: iam.Effect.ALLOW,
+        //     principals: [new iam.ArnPrincipal(`arn:aws:iam::${process.env.CDK_DEPLOY_ACCOUNT}:user/ext-jmacis`)],
+        //     actions: [
+        //         'secretsmanager:Describe*',
+        //         'secretsmanager:Get*',
+        //         'secretsmanager:List*'
+        //     ],
+        //     resources: [this.secret.secretArn]
+        // });
+
+        // this.secret.addToResourcePolicy(secretStatement3);
 
         // create cfn output secrets arn
         new cdk.CfnOutput(this, 'SecretsManagerArn', {
