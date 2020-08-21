@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import * as secretsManager from '@aws-cdk/aws-secretsmanager';
+import * as iam from '@aws-cdk/aws-iam';
 import { Config } from '../bin/config';
 
 export interface SecretsProps {
@@ -23,13 +24,57 @@ export class SecretsStack extends cdk.Construct {
             }
         });
 
+        // create iam policy statement limiting actions
+        const secretStatement = new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            principals: [new iam.ServicePrincipal('secretsmanager.amazonaws.com')],
+            // principals: [new iam.AnyPrincipal()],
+            actions: [
+                'secretsmanager:Describe*',
+                'secretsmanager:Get*',
+                'secretsmanager:List*'
+            ],
+            resources: ['*']
+        });
+
+        // this.secret.addToResourcePolicy(secretStatement);
+
+        // create iam policy statement to specific secret
+        const secretStatement2 = new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            principals: [new iam.ServicePrincipal('secretsmanager.amazonaws.com')],
+            // principals: [new iam.AnyPrincipal()],
+            actions: [
+                'secretsmanager:*',
+            ],
+            resources: [
+                this.secret.secretArn
+            ]
+        });
+
+        // this.secret.addToResourcePolicy(secretStatement2);
+
+        // create iam policy statement to specific secret
+        const secretStatement3 = new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            principals: [new iam.ArnPrincipal(`arn:aws:iam::${process.env.CDK_DEPLOY_ACCOUNT}:user/ext-jmacis`)],
+            actions: [
+                'secretsmanager:Describe*',
+                'secretsmanager:Get*',
+                'secretsmanager:List*'
+            ],
+            resources: [this.secret.secretArn]
+        });
+
+        this.secret.addToResourcePolicy(secretStatement3);
+
         // create cfn output secrets arn
         new cdk.CfnOutput(this, 'SecretsManagerArn', {
             description: 'CDK RDS Secrets Manager Arn',
             value: this.secret.secretArn
         });
 
-        //console.log('secretValueFromJson:', cdk.Token.asString(this.secret.secretValueFromJson('password')));
+        // console.log('secretValueFromJson:', cdk.Token.asString(this.secret.secretValueFromJson('password')));
         // console.log('secretArn:', this.secret.secretArn);
     }
 }

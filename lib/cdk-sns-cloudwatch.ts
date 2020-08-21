@@ -3,7 +3,7 @@ import { Config } from '../bin/config';
 import * as sns from '@aws-cdk/aws-sns';
 import * as subs from '@aws-cdk/aws-sns-subscriptions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import cloudwatch_actions = require('@aws-cdk/aws-cloudwatch-actions')
+import * as cloudwatch_actions from '@aws-cdk/aws-cloudwatch-actions';
 import * as rds from '@aws-cdk/aws-rds';
 
 export interface SnsCloudWatchProps {
