@@ -7,6 +7,10 @@ const env: string | undefined = process.env.NODE_ENV;
 const region: string | undefined = process.env.CDK_DEPLOY_REGION;
 const account: string | undefined = process.env.CDK_DEPLOY_ACCOUNT;
 
+export interface IamConfig {
+    userAccountName: string;
+}
+
 export interface VpcConfig {
     cidr: string;
     subnetPublicName: string;
@@ -77,6 +81,7 @@ export interface Config {
     cloudwatchAlarms: CloudwatchConfig;
     secretsManager: SecretsManagerConfig;
     ec2Instance: Ec2InstanceConfig;
+    iam: IamConfig;
 }
 
 function assert(value: any): any {
@@ -144,6 +149,9 @@ export function getConfig(): Config {
             sshPort: Number(assert(process.env.EC2_INSTANCE_SSH_PORT)),
             bastionInstanceClass: assert(configProps[`${env}`][`${region}`][`${account}`].ec2BastionInstanceClass),
             bastionInstanceSize: assert(configProps[`${env}`][`${region}`][`${account}`].ec2BastionInstanceSize),
+        },
+        iam: {
+            userAccountName: assert(configProps[`${env}`][`${region}`][`${account}`].iamUserAccountName),
         }
     };
 }
@@ -163,6 +171,7 @@ export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: 
             secretslambdaSecurityGroupId: 'sg-0d7e30b362b15ded6',
             ec2BastionInstanceClass: InstanceClass.T2,
             ec2BastionInstanceSize: InstanceSize.MICRO,
+            iamUserAccountName: 'ext-jmacis',
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_7,
@@ -171,8 +180,9 @@ export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: 
             readreplicaSecurityGroupId: undefined,
             ec2bastionSecurityGroupId: undefined,
             secretslambdaSecurityGroupId: undefined,
-            ec2BastionInstanceClass: undefined,
-            ec2BastionInstanceSize: undefined,
+            ec2BastionInstanceClass: InstanceClass.T2,
+            ec2BastionInstanceSize: InstanceSize.MICRO,
+            iamUserAccountName: 'root',
         }
     },
     'us-west-2': {
@@ -185,6 +195,7 @@ export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: 
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            iamUserAccountName: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_7,
@@ -195,6 +206,7 @@ export const configPropsDev: { [key: string]: { [key: string]: { [key: string]: 
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            iamUserAccountName: undefined,
         }
     }
 };
@@ -220,6 +232,7 @@ export const configPropsStag: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            iamUserAccountName: undefined,
         }
     },
     'us-west-2': {
@@ -232,6 +245,7 @@ export const configPropsStag: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            iamUserAccountName: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
@@ -242,6 +256,7 @@ export const configPropsStag: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            iamUserAccountName: undefined,
         }
     }
 };
@@ -257,6 +272,7 @@ export const configPropsProd: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            iamUserAccountName: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
@@ -267,6 +283,7 @@ export const configPropsProd: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            iamUserAccountName: undefined,
         }
     },
     'us-west-2': {
@@ -279,6 +296,7 @@ export const configPropsProd: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            iamUserAccountName: undefined,
         },
         '083258740834': {
             engineVersion: PostgresEngineVersion.VER_11_6,
@@ -289,6 +307,7 @@ export const configPropsProd: { [key: string]: { [key: string]: { [key: string]:
             secretslambdaSecurityGroupId: undefined,
             ec2BastionInstanceClass: undefined,
             ec2BastionInstanceSize: undefined,
+            iamUserAccountName: undefined,
         }
     }
 };

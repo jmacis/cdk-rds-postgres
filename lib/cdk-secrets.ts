@@ -28,7 +28,7 @@ export class SecretsStack extends cdk.Construct {
         const secretStatement = new iam.PolicyStatement({
             effect: iam.Effect.ALLOW,
             // principals: [new iam.AnyPrincipal()],
-            principals: [new iam.ArnPrincipal(`arn:aws:iam::${process.env.CDK_DEPLOY_ACCOUNT}:user/ext-jmacis`)],
+            principals: [new iam.ArnPrincipal(`arn:aws:iam::${process.env.CDK_DEPLOY_ACCOUNT}:user/${config.iam.userAccountName}`)],
             actions: [
                 'secretsmanager:Describe*',
                 'secretsmanager:Get*',
@@ -53,20 +53,6 @@ export class SecretsStack extends cdk.Construct {
         // });
 
         // this.secret.addToResourcePolicy(secretStatement2);
-
-        // // create iam policy statement to specific secret
-        // const secretStatement3 = new iam.PolicyStatement({
-        //     effect: iam.Effect.ALLOW,
-        //     principals: [new iam.ArnPrincipal(`arn:aws:iam::${process.env.CDK_DEPLOY_ACCOUNT}:user/ext-jmacis`)],
-        //     actions: [
-        //         'secretsmanager:Describe*',
-        //         'secretsmanager:Get*',
-        //         'secretsmanager:List*'
-        //     ],
-        //     resources: [this.secret.secretArn]
-        // });
-
-        // this.secret.addToResourcePolicy(secretStatement3);
 
         // create cfn output secrets arn
         new cdk.CfnOutput(this, 'SecretsManagerArn', {
